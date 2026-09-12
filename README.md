@@ -258,75 +258,63 @@ Generate reports containing:
 
 - **Next.js Auth**: Auth.js / NextAuth with Nodemailer for email verification & session management.
 - **FastAPI Backend Authorization**: Independent JWT signature, expiration, and RBAC verification on every protected request.
-- **Role-Based Access (RBAC)**: Enforced boundaries between Inspector and Admin personas.
-- **Protected Services**: OCR, CV, Rule Engine, and RAG pipelines accessible only via authorized backend requests.
-- **Inspection Audit Logs**: Complete digital audit trail for all inspection decisions.
-
----
-
-## 🏗️ System Design & Architecture
+- **Role-Based Access (RBAC)**: Enf## 🏗️ System Design & Architecture
 
 ### High-Level System Architecture
 
 ```mermaid
 flowchart TD
-    USER["👤 Inspector / Admin"]
+    USER["👤 Inspector / Supervisor / Admin"]
 
-    subgraph FRONTEND["🖥️ Frontend — Next.js"]
+    subgraph FRONTEND["🖥️ Layer 1: Frontend — Next.js 14+ (M1)"]
         F1["Auth.js / NextAuth & Nodemailer"]
-        F2["Landing & Public Pages"]
-        F3["Inspector Portal\nDashboard · Scan · Review Inspection · Reports"]
-        F4["Admin Portal\nUsers · Rules · Legal RAG Docs · Audit Logs"]
+        F2["Landing & Public Pages (FE-1)"]
+        F3["Inspector Portal: Scan · Review Inspection · Reports (FE-2)"]
+        F4["Admin Portal: Users · Rules · Audit Logs (FE-3)"]
     end
 
-    subgraph AUTH["🔐 Authentication Layer"]
-        JWT["JWT Access Token\n(Issued by Next.js Auth)"]
+    subgraph AUTH["🔐 Security Layer"]
+        JWT["Signed JWT Access Token\n(Issued by NextAuth)"]
     end
 
-    subgraph BACKEND["⚙️ Backend — FastAPI"]
+    subgraph BACKEND["⚙️ Layer 2: Orchestration — FastAPI (M2)"]
         B1["FastAPI Auth Middleware\n(Verify JWT Signature, Expiry & RBAC)"]
-        B2["API Gateway / Request Validation"]
-        B3["Scan Orchestration"]
-        B4["Report Management"]
-        B5["Database Operations"]
+        B2["API Gateway & Request Validation"]
+        B3["Task Queue (Celery / ARQ)"]
+        B4["ReportLab Platypus PDF Generator"]
     end
 
-    subgraph AI["🤖 AI Understanding"]
-        subgraph CV["👁️ CV Pipeline"]
-            CV1["OpenCV Preprocessing"]
-            CV2["Text Detection"]
-            CV3["OCR"]
-            CV4["Bounding Boxes"]
-            CV5["Readability Analysis"]
-        end
-        subgraph IE["📋 Information Extraction"]
-            IE1["MRP"]
-            IE2["Net Quantity"]
-            IE3["Manufacturer"]
-            IE4["Dates"]
-            IE5["Consumer Care"]
-        end
+    subgraph AI["👁️ Layer 3: AI & Computer Vision (M3)"]
+        QG["Quality Gate\n(Blur, Brightness, Glare, Resolution)"]
+        CV1["OpenCV Preprocessing\n(Deskew, Warp, Denoise, Threshold)"]
+        CV2["PaddleOCR PP-OCRv4 Engine\n(Text Detection & Recognition)"]
+        IE["Structured Field Extraction\n(MRP, Net Qty, Dates, Mfg, Contact)"]
     end
 
-    subgraph COMPLIANCE["⚖️ Compliance Intelligence"]
-        RE["Rule Engine\nDeterministic Validation\nRequired? · Format? · Placement?"]
-        RAG["RAG Engine\nLegal Documents · Vector Store\nCitation · Contextual Explanation"]
+    subgraph COMPLIANCE["⚖️ Layer 4: Compliance Intelligence (M4)"]
+        RE["Deterministic Rule Engine\n(Legal Metrology Rules 2011 C01–C26)"]
+        CONF["Confidence Gating\n(≥85% PASS · <85% NEEDS_REVIEW)"]
     end
 
-    subgraph DATA["💾 Evidence & Data"]
-        DB["PostgreSQL\nUsers · Inspections · Violations"]
-        OBJ["Object Storage\nEvidence Images · PDF Reports"]
-        VDB["Vector Database\nLegal Embeddings"]
+    subgraph DATA["💾 Layer 5: Evidence & Data (M2 / M1)"]
+        DB["PostgreSQL Database\n(Prisma: Auth & Users | SQLAlchemy: Domain Entities)"]
+        OBJ["Object Storage (S3 / Supabase)\nOriginals · Evidence Crops · PDF Reports"]
     end
 
     USER --> FRONTEND
     F1 --> JWT
-    FRONTEND -->|"Bearer JWT Header"| BACKEND
+    FRONTEND -->|"Bearer JWT Token"| BACKEND
     B1 --> B2
-    B2 --> AI
-    AI --> COMPLIANCE
-    RE <--> RAG
-    COMPLIANCE --> DATA
+    B2 --> B3
+    B3 --> QG
+    QG --> CV1
+    CV1 --> CV2
+    CV2 --> IE
+    IE --> RE
+    RE --> CONF
+    CONF --> DATA
+    CONF --> B4
+    B4 --> OBJ
     DATA --> BACKEND
     BACKEND --> FRONTEND
 
@@ -334,22 +322,21 @@ flowchart TD
     style FRONTEND fill:#0d1117,stroke:#7c3aed,color:#fff
     style AUTH fill:#0d1117,stroke:#ffab00,color:#fff
     style BACKEND fill:#0d1117,stroke:#e94560,color:#fff
-    style CV fill:#0d1117,stroke:#00bcd4,color:#fff
-    style IE fill:#0d1117,stroke:#ff9800,color:#fff
+    style AI fill:#0d1117,stroke:#00bcd4,color:#fff
     style COMPLIANCE fill:#0d1117,stroke:#4caf50,color:#fff
     style DATA fill:#0d1117,stroke:#ff6b35,color:#fff
 ```
 
 ### Dedicated Review Inspection Workflow
 
-Validra operates as an **AI-assisted decision-support system**, not a fully autonomous legal decision-maker. Key compliance decisions incorporate human-in-the-loop review:
+Validra operates as an **AI-assisted decision-support system**, not a fully autonomous legal decision-maker. Enforcement decisions incorporate human-in-the-loop oversight:
 
 ```mermaid
 flowchart LR
-    A["🤖 AI Result & Findings"] --> B["👮 Inspector Reviews Evidence"]
-    B --> C["✏️ Accept / Reject / Modify Finding"]
-    C --> D["💬 Add Remarks"]
-    D --> E["📄 Finalize & Issue Compliance Report"]
+    A["👁️ AI Extraction & Rules"] --> B["👮 Dedicated Review Page\n(Side-by-side Evidence)"]
+    B --> C["✏️ Inspector Action:\nAccept / Reject / Modify Finding"]
+    C --> D["💬 Add Officer Remarks"]
+    D --> E["📄 Finalize & Generate\nSigned PDF Report"]
 
     style A fill:#0d1117,stroke:#7c3aed,color:#fff
     style B fill:#0d1117,stroke:#00bcd4,color:#fff
@@ -361,65 +348,62 @@ flowchart LR
 ### Five-Layer Architecture
 
 ```text
-┌───────────────────────────────────────────┐
-│              USER EXPERIENCE              │
-│     Next.js • Scan • Dashboard • Reports  │
-├───────────────────────────────────────────┤
-│              ORCHESTRATION                │
-│       FastAPI • Auth • APIs • DB          │
-├───────────────────────────────────────────┤
-│             AI UNDERSTANDING              │
-│      OpenCV • OCR • CV • Extraction       │
-├───────────────────────────────────────────┤
-│            COMPLIANCE INTELLIGENCE        │
-│       Rule Engine • RAG • Legal Context   │
-├───────────────────────────────────────────┤
-│             EVIDENCE & DATA               │
-│ PostgreSQL • Object Storage • Vector DB   │
-└───────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────┐
+│  Layer 1 — USER EXPERIENCE (Next.js 14+ App Router)                   │
+│  Landing Pages · Scan Interface · Dedicated Review · Reports · Admin  │
+├────────────────────────────────────────────────────────────────────────┤
+│  Layer 2 — ORCHESTRATION & GATEWAY (FastAPI)                          │
+│  Auth Middleware · REST APIs · Async Task Queue (Celery/ARQ) · Storage │
+├────────────────────────────────────────────────────────────────────────┤
+│  Layer 3 — AI UNDERSTANDING & COMPUTER VISION                         │
+│  Quality Gate · OpenCV Preprocessing · PaddleOCR (PP-OCRv4) · Extract │
+├────────────────────────────────────────────────────────────────────────┤
+│  Layer 4 — COMPLIANCE INTELLIGENCE                                    │
+│  Deterministic Rule Engine · Legal References · Confidence Gating     │
+├────────────────────────────────────────────────────────────────────────┤
+│  Layer 5 — EVIDENCE & DATA                                            │
+│  PostgreSQL (Dual ORM: Prisma + SQLAlchemy) · Object Storage (S3/Supabase)
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Complete Inspection Sequence
 
 ```mermaid
 sequenceDiagram
-    actor Officer as 👤 Officer
-    participant FE as 🖥️ Frontend
-    participant BE as ⚙️ Backend
-    participant CV as 👁️ CV/OCR
+    actor Officer as 👤 Inspector
+    participant FE as 🖥️ Frontend (Next.js)
+    participant BE as ⚙️ Backend (FastAPI)
+    participant Queue as ⚡ Task Queue (Celery/ARQ)
+    participant CV as 👁️ CV & PaddleOCR
     participant RE as ⚖️ Rule Engine
-    participant RAG as 🧠 RAG
-    participant DB as 💾 Database
+    participant DB as 💾 Database & Storage
 
-    Officer->>FE: Upload product image
-    FE->>BE: POST /scans (image)
-    BE->>DB: Create Inspection ID
-    BE->>BE: Store image in Object Storage
+    Officer->>FE: Upload product image(s) (Drag-drop / Camera)
+    FE->>BE: POST /api/v1/scans (multipart/form-data)
+    BE->>DB: Store original image + SHA-256 hash
+    BE->>DB: Create Inspection record (status: "processing")
+    BE-->>FE: Return { inspection_id, status: "processing" }
+    BE->>Queue: Dispatch background inspection task
 
-    BE->>CV: Send image for processing
-    CV->>CV: OpenCV preprocessing
-    CV->>CV: Text detection + OCR
-    CV->>CV: Bounding boxes + confidence
-    CV-->>BE: Extracted text + spatial data
+    Queue->>CV: Stage 1: Quality Gate evaluation
+    alt Quality Gate Fails
+        CV-->>DB: Status = "quality_failed"
+    else Quality Gate Passes
+        Queue->>CV: Stage 2: OpenCV Preprocessing (warp, deskew, denoise)
+        Queue->>CV: Stage 3: PaddleOCR PP-OCRv4 (detection + recognition)
+        Queue->>CV: Stage 4: Field Extraction (MRP, Qty, Dates, Mfg, Contact)
+        Queue->>RE: Stage 5: Evaluate against PC Rules 2011 (C01–C26)
+        RE->>RE: Gating: OCR conf < 85% → Mark NEEDS_REVIEW
+        Queue->>DB: Stage 6: Store cropped evidence bboxes & compliance findings
+        Queue->>DB: Update inspection status ("needs_review" or "completed")
+    end
 
-    BE->>BE: Information Extraction
-    Note over BE: MRP, Quantity, Manufacturer,<br/>Dates, Consumer Care
-
-    BE->>RE: Structured data + applicable rules
-    RE->>RE: Validate declarations
-    RE->>RE: Classify violations + severity
-    RE-->>BE: Compliance findings
-
-    BE->>RAG: Query relevant legal context
-    RAG->>RAG: Retrieve legal provisions
-    RAG->>RAG: Generate explanation
-    RAG-->>BE: Legal context + references
-
-    BE->>BE: Generate evidence + report
-    BE->>DB: Save inspection + violations
-    BE-->>FE: Compliance result
-    FE-->>Officer: Display result + evidence
-    Officer->>FE: Download/share report
+    Officer->>FE: View Dedicated Review Inspection page
+    Officer->>FE: Accept / Reject / Modify findings & add remarks
+    FE->>BE: POST /api/v1/inspections/{id}/finalize
+    BE->>DB: Generate ReportLab PDF report with SHA-256 hash & QR code
+    BE->>DB: Update status = "finalized"
+    BE-->>FE: Final compliance report ready for download
 ```
 
 ---
@@ -428,62 +412,43 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A["📷 Raw Product Image"] --> B["✅ Image Validation"]
-    B --> C["🔧 OpenCV Preprocessing"]
-
-    C --> D["Resize"]
-    C --> E["Denoise"]
-    C --> F["Perspective Correction"]
-
-    D --> G["🔍 Text Detection"]
-    E --> G
-    F --> G
-
-    G --> H["📝 OCR"]
-    H --> I["Text + Bounding Boxes"]
-    I --> J["📋 Information Extraction"]
-
-    J --> K["MRP"]
-    J --> L["Net Quantity"]
-    J --> M["Manufacturer"]
-    J --> N["Dates"]
-    J --> O["Consumer Care"]
-
-    K --> P["📦 Structured Product JSON"]
-    L --> P
-    M --> P
-    N --> P
-    O --> P
-
-    P --> Q["⚖️ Applicable Rules"]
-    Q --> R["Rule Evaluation"]
-    R --> S{"Decision"}
-
-    S -->|"✅"| T["Compliant"]
-    S -->|"❌"| U["Non-Compliant"]
-    S -->|"⚠️"| V["Needs Review"]
-
-    T --> W["📝 Evidence + Legal Context"]
-    U --> W
-    V --> W
-
-    W --> X["📄 Report + Database"]
+    A["📷 Raw Package Image"] --> B["🔍 Stage 1: Quality Gate\n(Blur, Glare, Brightness, Resolution)"]
+    B -->|"Pass"| C["🔧 Stage 2: OpenCV Preprocessing\n(Perspective Warp, Deskew, Denoise)"]
+    B -->|"Fail"| B_FAIL["⚠️ Status: quality_failed\n(Prompts Officer to Retake Photo)"]
+    C --> D["👁️ Stage 3: PaddleOCR PP-OCRv4\n(Text Detection & Recognition + BBoxes)"]
+    D --> E["📋 Stage 4: Structured Field Extraction\n(MRP, Net Qty, Dates, Mfg, Contact)"]
+    E --> F["⚖️ Stage 5: Rule Engine Evaluation\n(Deterministic Checks C01–C26)"]
+    F --> G{"Confidence Gate\n(Threshold ≥ 85%)"}
+    G -->|"High Conf (≥ 85%)"| H["Status: COMPLETED\n(PASS / FAIL Classification)"]
+    G -->|"Low Conf (< 85%)"| I["Status: NEEDS_REVIEW\n(Ambiguous or Low Quality)"]
+    H --> J["👮 Stage 6: Dedicated Review Page\n(Spatial Evidence Viewer & Bounding Boxes)"]
+    I --> J
+    J --> K["✏️ Inspector Reviews & Adds Remarks"]
+    K --> L["📄 Stage 7: ReportLab PDF Report\n(SHA-256 Hash + QR Verification URL)"]
 
     style A fill:#0d1117,stroke:#58a6ff,color:#fff
-    style P fill:#0d1117,stroke:#ff9800,color:#fff
-    style T fill:#0d3b0d,stroke:#00c853,color:#fff
-    style U fill:#3b0d0d,stroke:#ff1744,color:#fff
-    style V fill:#3b3b0d,stroke:#ffab00,color:#fff
-    style X fill:#0d1117,stroke:#7c3aed,color:#fff
+    style B fill:#0d1117,stroke:#00bcd4,color:#fff
+    style B_FAIL fill:#3b0d0d,stroke:#ff1744,color:#fff
+    style C fill:#0d1117,stroke:#00bcd4,color:#fff
+    style D fill:#0d1117,stroke:#00bcd4,color:#fff
+    style E fill:#0d1117,stroke:#ff9800,color:#fff
+    style F fill:#0d1117,stroke:#4caf50,color:#fff
+    style G fill:#0d1117,stroke:#ffab00,color:#fff
+    style H fill:#0d3b0d,stroke:#00c853,color:#fff
+    style I fill:#3b3b0d,stroke:#ffab00,color:#fff
+    style J fill:#0d1117,stroke:#58a6ff,color:#fff
+    style K fill:#0d1117,stroke:#7c3aed,color:#fff
+    style L fill:#0d3b0d,stroke:#00c853,color:#fff
 ```
 
 Example OCR output:
 
 ```json
 {
-  "text": "MRP ₹50",
-  "confidence": 0.96,
-  "bbox": [120, 340, 280, 390]
+  "text": "MRP ₹99.00",
+  "confidence": 0.97,
+  "bbox": [120, 340, 420, 390],
+  "bbox_height_px": 50
 }
 ```
 
@@ -492,52 +457,62 @@ Example extracted field:
 ```json
 {
   "mrp": {
-    "value": 50.0,
+    "value": 99.0,
     "currency": "INR",
-    "confidence": 0.96
+    "raw_text": "MRP ₹99.00",
+    "confidence": 0.97,
+    "status": "found"
   }
 }
 ```
 
 ---
 
-## ⚖️ Rule Engine + RAG
+## ⚖️ Rule Engine & Compliance Intelligence
 
-Validra separates **compliance decisions** from **language generation**.
+Validra separates **text detection & extraction** from **compliance evaluation**. 
 
-```mermaid
-flowchart TD
-    subgraph IN["📥 Input Stage"]
-        A["📋 Extracted Product Data"]
-    end
+> **Core Principle:** Computer vision extracts text; the deterministic Rule Engine evaluates compliance against the Legal Metrology (Packaged Commodities) Rules, 2011. Final legal decisions are never made by an autonomous LLM.
 
-    subgraph RE["⚖️ Rule Engine — Decision Layer"]
-        direction TB
-        B["⚙️ Load Applicable Legal Rules"] --> C["🔍 Validate Extracted Values & Formats"]
-        C --> D{"⚡ Compliance Check"}
-        D -->|"Pass"| E["✅ COMPLIANT"]
-        D -->|"Fail"| F["❌ NON-COMPLIANT"]
-        D -->|"Low Confidence"| G["⚠️ NEEDS REVIEW"]
-    end
+### Rule Engine Decision States
 
-    subgraph RAG["🧠 RAG Engine — Explanation Layer"]
-        direction TB
-        H["🔎 Vector DB Legal Context Query"] --> I["📚 Retrieve Act & Rule Provisions"]
-        I --> J["📝 Generate Contextual Explanation"]
-        J --> K["📌 Attach Authoritative References"]
-    end
+| State | Icon | Meaning | Condition |
+|:---|:---|:---|:---|
+| **Compliant** | ✅ | Declaration complies with legal rules | High confidence (≥ 85%), rule satisfied |
+| **Violation** | ❌ | Statutory non-compliance identified | Declaration missing/invalid, high confidence |
+| **Needs Review** | ⚠️ | Requires human officer evaluation | OCR confidence `< 85%`, ambiguous units, or image quality issues |
+| **Not Applicable** | ⚪ | Rule exempted for package category | Exemption under Rule 26 (e.g. packages ≤ 10g/ml) |
 
-    subgraph OUT["📤 Final Inspection Output"]
-        L["📄 Evidence-Backed Compliance Finding & Report"]
-    end
+### Legal Metrology Compliance Checks Matrix (C01 to C26)
 
-    A --> B
-    E --> H
-    F --> H
-    G --> H
-    K --> L
-
-    style IN fill:#0d1117,stroke:#58a6ff,stroke-width:2px,color:#fff
+| Check ID | Declaration / Rule Requirement | Legal Reference | CV Verifiable? |
+|:---|:---|:---|:---:|
+| **C01** | Package applicability & exemption check | Rule 3, 26 | Partially |
+| **C02** | Manufacturer name declaration | Rule 6, 10 | ✅ |
+| **C03** | Manufacturer complete address | Rule 6, 10 | ✅ |
+| **C04** | Packer name and address (if distinct) | Rule 6, 10 | ✅ |
+| **C05** | Importer details (if imported goods) | Rule 6, 10 | ✅ |
+| **C06** | Common / generic commodity name | Rule 6(1)(b) | ✅ |
+| **C07** | Multipack individual product naming | Rule 6(1)(b) | ✅ |
+| **C08** | Net quantity declaration present | Rule 6, 11 | ✅ |
+| **C09** | Correct measurement unit for commodity | Rule 12, 13 | ✅ |
+| **C10** | Standard SI units compliance (no dozen/gross) | Rule 13 | ✅ |
+| **C11** | Month & year of mfg / packing / import | Rule 6(1)(d) | ✅ |
+| **C12** | MRP declaration present | Rule 6(1)(e) | ✅ |
+| **C13** | MRP inclusive of all taxes declaration | Rule 6(1)(e) | ✅ |
+| **C14** | Package physical dimensions (where required) | Rule 6(1)(f), 14–17 | ✅ |
+| **C15** | Consumer care contact details | Rule 6(2) | ✅ |
+| **C16** | Principal Display Panel (PDP) placement | Rule 7, 8 | Partially |
+| **C17** | Quantity numeral minimum height | Rule 7 | ⚠️ Relative |
+| **C18** | Declaration letter minimum height | Rule 7 | ⚠️ Relative |
+| **C19** | Quantity clear space surrounding | Rule 8 | Partially |
+| **C20** | Legibility & prominence | Rule 9 | Partially |
+| **C21** | Contrast of declarations against background | Rule 9 | ✅ |
+| **C22** | Language requirement (English or Devanagari Hindi) | Rule 9 | ✅ |
+| **C23** | No misleading quantity expressions | Rule 12 | ✅ |
+| **C24** | Standard pack size compliance | Rule 5, 2nd Sched. | ✅ |
+| **C25** | Sticker over original MRP tamper check | Rule 6(3) | ⚠️ Flag |
+| **C26** | Deceptive packaging suspicion | Rule 23 | ⚠️ Flag |ff,stroke-width:2px,color:#fff
     style RE fill:#0d1117,stroke:#4caf50,stroke-width:2px,color:#fff
     style RAG fill:#0d1117,stroke:#7c3aed,stroke-width:2px,color:#fff
     style OUT fill:#0d1117,stroke:#ff9800,stroke-width:2px,color:#fff
@@ -695,88 +670,91 @@ erDiagram
         string storage_path
         timestamp generated_at
     }
-```
+### Database Architecture: Dual-ORM Strategy
 
-Potential entities:
+Validra uses **two ORMs** accessing the **same PostgreSQL database**:
 
-```text
-users
-products
-inspections
-images
-extracted_fields
-compliance_results
-violations
-rules
-reports
-audit_logs
-```
+| ORM | Scope | Managed Entities |
+|:---|:---|:---|
+| **Prisma** | Frontend (Next.js & NextAuth) | `users`, `accounts`, `sessions`, `verification_tokens`, `password_reset_tokens` |
+| **SQLAlchemy 2.0** | Backend (FastAPI Domain) | `products`, `inspections`, `images`, `ocr_runs`, `ocr_text_regions`, `extracted_fields`, `rules`, `compliance_results`, `violations`, `reports`, `audit_logs` |
 
-| Table                  | Purpose                     | Key Relationships               |
-| :--------------------- | :-------------------------- | :------------------------------ |
-| `users`              | Officer/admin accounts      | Creates inspections             |
-| `products`           | Product information         | Inspected via inspections       |
-| `inspections`        | Core inspection record      | Links all entities              |
-| `images`             | Original + processed images | Belong to inspection            |
-| `extracted_fields`   | OCR/extraction results      | Per inspection, with confidence |
-| `compliance_results` | Overall compliance status   | One per inspection              |
-| `violations`         | Individual violations found | References rules                |
-| `rules`              | Legal compliance rules      | Referenced by violations        |
-| `reports`            | Generated PDF reports       | One per inspection              |
-| `audit_logs`         | Who did what, when          | System-wide tracking            |
+| Table | Layer | Purpose |
+|:---|:---|:---|
+| `users` | Prisma / NextAuth | Officer & admin authentication accounts |
+| `products` | SQLAlchemy | Inspected product metadata (name, category, barcode, package type) |
+| `inspections` | SQLAlchemy | Core inspection lifecycle record & officer remarks |
+| `images` | SQLAlchemy | Original, processed, and cropped evidence image storage URIs & SHA-256 hashes |
+| `ocr_runs` | SQLAlchemy | PaddleOCR execution metadata, runtime, and raw output JSONB |
+| `ocr_text_regions`| SQLAlchemy | Text lines with spatial bounding box polygons (`x1, y1, x2, y2`) and confidence |
+| `extracted_fields`| SQLAlchemy | Normalized mandatory fields (MRP, Net Qty, Dates, Mfg, Contact) |
+| `rules` | SQLAlchemy | Legal Metrology statutory rules (C01–C26) with versioning & exemptions |
+| `compliance_results`| SQLAlchemy | Aggregated inspection compliance score, pass/fail/review counts |
+| `violations` | SQLAlchemy | Specific compliance breaches linked to evidence crops & inspector decisions |
+| `reports` | SQLAlchemy | Generated PDF report metadata, pipeline versions, SHA-256 hash, and QR code URL |
+| `audit_logs` | SQLAlchemy | Immutable security and officer decision audit log entries |
 
 ---
 
 ## 🔌 API Overview
 
-| Method   | Endpoint              | Purpose                 | Auth |
-| :------- | :-------------------- | :---------------------- | :--: |
-| `POST` | `/auth/login`       | Authenticate user       |  ❌  |
-| `POST` | `/scans`            | Upload/start inspection |  ✅  |
-| `GET`  | `/scans/{id}`       | Get processing status   |  ✅  |
-| `GET`  | `/inspections/{id}` | Retrieve inspection     |  ✅  |
-| `GET`  | `/products`         | Search products         |  ✅  |
-| `GET`  | `/violations`       | Retrieve violations     |  ✅  |
-| `GET`  | `/dashboard`        | Dashboard statistics    |  ✅  |
-| `POST` | `/reports/{id}`     | Generate report         |  ✅  |
-| `GET`  | `/reports/{id}`     | Retrieve report         |  ✅  |
+All backend APIs are versioned under `/api/v1/` and enforce FastAPI JWT signature, expiration, and role validation:
 
-API contracts should be versioned and documented through
-FastAPI/OpenAPI.
+| Method | Endpoint | Purpose | Auth | Role |
+|:---|:---|:---|:---:|:---|
+| `POST` | `/api/v1/auth/login` | Authenticate user & issue session | ❌ | All |
+| `POST` | `/api/v1/scans` | Upload package image & start background scan | ✅ | Inspector |
+| `GET` | `/api/v1/scans/{id}` | Check scan processing progress | ✅ | Inspector |
+| `GET` | `/api/v1/inspections` | List inspections with pagination & filters | ✅ | Inspector / Supervisor |
+| `GET` | `/api/v1/inspections/{id}` | Retrieve complete inspection detail | ✅ | Inspector / Supervisor |
+| `PATCH` | `/api/v1/inspections/{id}/findings/{fid}` | Accept, reject, or modify an individual finding | ✅ | Inspector |
+| `POST` | `/api/v1/inspections/{id}/finalize` | Finalize inspection & trigger signed PDF generation | ✅ | Inspector |
+| `POST` | `/api/v1/reports/{id}` | Generate/regenerate ReportLab PDF report | ✅ | Inspector |
+| `GET` | `/api/v1/reports/{id}/download` | Download finalized PDF compliance report | ✅ | Inspector / Supervisor |
+| `GET` | `/api/v1/dashboard` | Aggregated compliance & scan metrics | ✅ | Inspector / Supervisor / Admin |
+| `GET` | `/api/v1/admin/users` | User management & role administration | ✅ | Admin |
+| `POST` | `/api/v1/admin/rules` | Create or update statutory compliance rules | ✅ | Admin |
+| `GET` | `/api/v1/admin/audit-logs` | Query immutable system audit logs | ✅ | Admin |
 
 <details>
-<summary><strong>📡 Example API Usage</strong></summary>
+<summary><strong>📡 Example API Request & Response</strong></summary>
 
 **Start Inspection:**
 
 ```http
-POST /scans
+POST /api/v1/scans
+Authorization: Bearer <JWT_TOKEN>
 Content-Type: multipart/form-data
 
-image = product.jpg
+image = package_photo.jpg
 ```
 
-**Response:**
+**Response (HTTP 202 Accepted):**
 
 ```json
 {
   "inspection_id": "INS-000124",
-  "status": "processing"
+  "status": "processing",
+  "message": "Scan job queued for processing"
 }
 ```
 
-**Poll for result:**
+**Poll Processing Status:**
 
 ```http
-GET /scans/INS-000124
+GET /api/v1/scans/INS-000124
+Authorization: Bearer <JWT_TOKEN>
 ```
 
 ```json
 {
-  "status": "completed",
-  "compliance_status": "non_compliant",
-  "score": 78,
-  "violations": 2
+  "inspection_id": "INS-000124",
+  "status": "needs_review",
+  "compliance_score": 78.5,
+  "total_rules": 14,
+  "passed": 10,
+  "failed": 2,
+  "needs_review": 2
 }
 ```
 
@@ -786,23 +764,21 @@ GET /scans/INS-000124
 
 ## 🧩 Technology Stack
 
-| Layer                     | Technology                  | Badge                                                                                                                                                                                                   | Purpose                           |
-| :------------------------ | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :-------------------------------- |
-| **Frontend**        | Next.js, TypeScript         | ![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) | High-performance, SEO-friendly UI |
-| **UI**              | Tailwind CSS, shadcn/ui     | ![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=flat&logo=tailwindcss&logoColor=white) ![shadcn](https://img.shields.io/badge/shadcn/ui-000?style=flat&logo=shadcnui&logoColor=white)    | Modern utility-first styling      |
-| **Backend**         | FastAPI, Python             | ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)            | Async REST API & orchestration    |
-| **Database**        | PostgreSQL                  | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)                                                                                                | Relational data storage           |
-| **Computer Vision** | OpenCV                      | ![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=flat&logo=opencv&logoColor=white)                                                                                                            | Image preprocessing & analysis    |
-| **OCR**             | PaddleOCR / selected engine | ![PaddleOCR](https://img.shields.io/badge/PaddleOCR-0062B0?style=flat&logo=paddlepaddle&logoColor=white)                                                                                                | Text recognition                  |
-| **ML/NLP**          | spaCy, scikit-learn         | ![spaCy](https://img.shields.io/badge/spaCy-09A3D5?style=flat&logo=spacy&logoColor=white)                                                                                                               | NLP & extraction                  |
-| **RAG**             | Embeddings + Vector DB      | ![VectorDB](https://img.shields.io/badge/Vector_DB-FF6B35?style=flat)                                                                                                                                   | Legal document retrieval          |
-| **LLM**             | Configurable provider       | ![LLM](https://img.shields.io/badge/LLM-7c3aed?style=flat)                                                                                                                                              | Explanation generation            |
-| **Auth**            | JWT / configurable          | ![JWT](https://img.shields.io/badge/JWT-000?style=flat&logo=jsonwebtokens&logoColor=white)                                                                                                              | Authentication & authorization    |
-| **Reports**         | ReportLab                   | ![ReportLab](https://img.shields.io/badge/ReportLab-333?style=flat)                                                                                                                                     | PDF report generation             |
-| **API**             | REST / JSON                 | ![REST](https://img.shields.io/badge/REST-02569B?style=flat)                                                                                                                                            | API protocol                      |
-
-Technology choices may evolve based on accuracy, benchmarks, cost, and
-deployment constraints.
+| Layer | Technology | Badge | Purpose |
+|:---|:---|:---|:---|
+| **Frontend Framework** | Next.js 14+ (App Router) | ![Next.js](https://img.shields.io/badge/Next.js-black?style=flat&logo=next.js&logoColor=white) | Server Components default, streaming SSR |
+| **Language** | TypeScript (Strict) | ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) | End-to-end type safety |
+| **UI & Styling** | Tailwind CSS + shadcn/ui | ![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=flat&logo=tailwindcss&logoColor=white) ![shadcn](https://img.shields.io/badge/shadcn/ui-000?style=flat&logo=shadcnui&logoColor=white) | Accessible, token-based design system |
+| **Frontend Auth & DB** | NextAuth + Nodemailer + Prisma | ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white) | User auth, email verification, sessions |
+| **Backend Framework** | FastAPI (Python 3.11+) | ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white) | High-performance async REST APIs |
+| **Backend ORM** | SQLAlchemy 2.0 (async) + Alembic | ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat) | Relational domain persistence & migrations |
+| **Task Queue** | Celery / ARQ | ![Celery](https://img.shields.io/badge/Celery-37814A?style=flat&logo=celery&logoColor=white) | Asynchronous scan pipeline orchestration |
+| **Database** | PostgreSQL 15+ | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white) | Relational ACID storage (Prisma + SQLAlchemy) |
+| **Computer Vision** | OpenCV | ![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=flat&logo=opencv&logoColor=white) | Image quality gate & label preprocessing |
+| **OCR Engine** | PaddleOCR (PP-OCRv4) | ![PaddleOCR](https://img.shields.io/badge/PaddleOCR-0062B0?style=flat&logo=paddlepaddle&logoColor=white) | High-accuracy packaging text detection & OCR |
+| **Rule Engine** | Deterministic Python Engine | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white) | Legal Metrology Rules 2011 (C01–C26) |
+| **Object Storage** | S3-compatible / Supabase Storage | ![Storage](https://img.shields.io/badge/Storage-FF6B35?style=flat) | Raw photos, evidence crops, and PDF reports |
+| **Report Generation** | ReportLab Platypus | ![ReportLab](https://img.shields.io/badge/ReportLab-333333?style=flat) | Evidentiary PDF reports with QR verification |
 
 ---
 
@@ -811,46 +787,56 @@ deployment constraints.
 ```text
 validra/
 │
-├── frontend/                 # Next.js application
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   └── public/
+├── frontend/                     # Next.js 14+ application
+│   ├── prisma/
+│   │   ├── schema.prisma         # Prisma schema for Auth & User management
+│   │   └── seed.ts               # CLI script for provisioning admin accounts
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── (landing)/        # FE-1: Container-first public marketing pages
+│   │   │   ├── (auth)/           # FE-2: Login, Register, Verify Email
+│   │   │   ├── (inspector)/      # FE-2: Dashboard, Scan, Dedicated Review, Reports
+│   │   │   └── (admin)/          # FE-3: Admin dashboard, Users, Rules, Audit logs
+│   │   └── components/
+│   │       ├── ui/               # shadcn shared primitives
+│   │       ├── landing/          # Landing container components
+│   │       ├── inspector/        # Evidence viewer, Review tables, Scan uploaders
+│   │       └── admin/            # Data tables, Rule configurator, Audit viewers
+│   └── package.json
 │
-├── backend/                  # FastAPI application
+├── backend/                      # FastAPI application
 │   ├── app/
-│   │   ├── api/              # Route handlers
-│   │   ├── core/             # Config, security
-│   │   ├── database/         # DB connections
-│   │   ├── models/           # SQLAlchemy models
-│   │   ├── schemas/          # Pydantic schemas
-│   │   └── services/         # Business logic
+│   │   ├── api/v1/               # Versioned REST endpoints (scans, inspections, reports)
+│   │   ├── services/             # Scan orchestrator, Quality gate, Evidence, Reports
+│   │   ├── models/               # SQLAlchemy 2.0 domain models
+│   │   ├── schemas/              # Pydantic v2 request/response schemas
+│   │   └── utils/                # Auth verification, Storage gateway, SHA-256 hashing
+│   ├── alembic/                  # Database migration scripts
 │   └── requirements.txt
 │
-├── cv/                       # Computer Vision & OCR
-│   ├── preprocessing/
-│   ├── detection/
-│   ├── ocr/
-│   └── extraction/
+├── cv/                           # Computer Vision & OCR pipeline
+│   ├── quality_gate.py           # Blur, glare, brightness, and resolution checks
+│   ├── preprocessing.py          # Perspective warp, deskew, denoise, adaptive threshold
+│   ├── ocr_engine.py             # PaddleOCR PP-OCRv4 detection and recognition wrapper
+│   └── field_extractor.py        # Regex & NLP parser for mandatory declarations
 │
-├── rule-engine/              # Compliance rule system
-│   ├── rules/
-│   ├── validators/
-│   ├── evaluators/
-│   └── schemas/
+├── rule-engine/                  # Compliance Rule System
+│   ├── rules/                    # Formalized Legal Metrology Rules (C01–C26)
+│   ├── evaluators/               # Deterministic field compliance evaluators
+│   └── schemas/                  # Compliance result and finding data schemas
 │
-├── rag/                      # Legal RAG pipeline
-│   ├── ingestion/
-│   ├── retrieval/
-│   ├── embeddings/
-│   └── generation/
+├── research/                     # Datasets, benchmarks, and Legal Metrology research
+├── tests/                        # Unit, integration, CV benchmarking, and E2E tests
 │
-├── research/                 # Legal research, datasets, benchmarks
-├── tests/                    # Unit, integration & E2E tests
+├── docs/                         # Project Documentation
+│   ├── Architecture.md           # 5-Layer architecture & scan pipeline specification
+│   ├── Design.md                 # UI/UX, route groups, and Dedicated Review specs
+│   ├── PRD.md                    # Functional requirements (FR-01..20) & rules (C01..26)
+│   ├── Rules.md                  # Workspace coding standards & team boundaries
+│   ├── memory.md                 # Architectural decision log
+│   └── blueprints/               # Consolidated system, backend, DB, and frontend blueprints
 │
-├── docs/                     # 📖 Interactive MDX documentation
-│   └── base_setup.mdx        # Beginner-friendly environment setup
-│
+├── implementation.md             # Active implementation tracking
 ├── .env.example
 ├── .gitignore
 └── README.md
@@ -1036,36 +1022,33 @@ flowchart TD
 flowchart TD
     V["🛡️ VALIDRA"]
 
-    V --> UI["🎨 M1\nFrontend"]
-    V --> API["⚙️ M2\nBackend + Infra"]
-    V --> CVT["👁️ M3\nComputer Vision"]
+    V --> UI["🎨 M1\nFrontend & Presentation"]
+    V --> API["⚙️ M2\nBackend & Infrastructure"]
+    V --> CVT["👁️ M3\nComputer Vision & OCR"]
     V --> RET["⚖️ M4\nRule Engine"]
-    V --> RAGT["🧠 M5\nRAG + AI"]
-    V --> QAT["🔬 M6\nResearch + QA"]
+    V --> QAT["🔬 M5\nResearch & QA"]
 
     UI -.->|"supports"| QAT
     API -.->|"integrates"| UI
     CVT -.->|"feeds"| RET
-    RAGT -.->|"explains"| RET
     QAT -.->|"tests"| CVT
+    RET -.->|"evaluates"| API
 
     style V fill:#0d1117,stroke:#58a6ff,color:#fff
     style UI fill:#0d1117,stroke:#7c3aed,color:#fff
     style API fill:#0d1117,stroke:#e94560,color:#fff
     style CVT fill:#0d1117,stroke:#00bcd4,color:#fff
     style RET fill:#0d1117,stroke:#4caf50,color:#fff
-    style RAGT fill:#0d1117,stroke:#ff9800,color:#fff
     style QAT fill:#0d1117,stroke:#ff6b35,color:#fff
 ```
 
-| Domain                                 | Responsibility                                               |
-| :------------------------------------- | :----------------------------------------------------------- |
-| 🎨**Frontend**                   | Next.js, UI/UX, dashboard, scanning workflow                 |
-| ⚙️**Backend & Infrastructure** | FastAPI, APIs, DB, Auth, storage, deployment                 |
-| 👁️**Computer Vision**          | OpenCV, OCR, detection, readability analysis                 |
-| ⚖️**Rule Engine**              | Legal rules, validation, violations, compliance scoring      |
-| 🧠**RAG & AI**                   | Legal retrieval, embeddings, LLM integration                 |
-| 🔬**Research & QA**              | Legal research, datasets, evaluation, testing, documentation |
+| Module | Domain | Responsibility | Path Boundaries |
+|:---|:---|:---|:---|
+| **M1** | 🎨 **Frontend & Presentation** | Next.js 14+ App Router, UI/UX, landing containers, dedicated review UI, admin portal | `frontend/` |
+| **M2** | ⚙️ **Backend & Infrastructure** | FastAPI, REST APIs, PostgreSQL Dual-ORM (Prisma/SQLAlchemy), task queue, PDF reports | `backend/`, `db/` |
+| **M3** | 👁️ **Computer Vision & OCR** | OpenCV preprocessing, Quality Gate, PaddleOCR PP-OCRv4, field extraction | `cv/` |
+| **M4** | ⚖️ **Rule Engine** | Legal Metrology Rules 2011 (C01–C26), deterministic validation, compliance scoring | `rule-engine/` |
+| **M5** | 🔬 **Research & QA** | Legal research, benchmark datasets, rule validation testing, E2E testing, SIH docs | `research/`, `tests/` |
 
 All members contribute to integration, debugging, and final system
 validation.

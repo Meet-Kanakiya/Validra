@@ -1,11 +1,14 @@
+import os
 import sys
 from pathlib import Path
 import pytest
-from fastapi.testclient import TestClient
+
+os.environ["TESTING"] = "1"
 
 # Ensure app package is in Python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from fastapi.testclient import TestClient
 from app.main import app
 
 

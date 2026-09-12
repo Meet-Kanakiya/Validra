@@ -1,14 +1,3 @@
-def test_root_endpoint(client):
+def test_root_dummy_removed(client):
     response = client.get("/")
-    assert response.status_code == 200
-    data = response.json()
-    assert "message" in data
-    assert data["message"] == "Welcome to Validra Backend API"
-
-
-def test_health_endpoint(client):
-    response = client.get("/health")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["status"] == "healthy"
-    assert data["service"] == "Validra Backend API"
+    assert response.status_code == 404

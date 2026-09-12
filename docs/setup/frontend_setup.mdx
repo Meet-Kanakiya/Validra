@@ -38,7 +38,7 @@ description: "Step-by-step instructions for setting up, configuring, and running
 | React | 19.2.8 | Server Components |
 | TypeScript | ^5 | Strict mode |
 | Tailwind CSS | ^4 | v4 (CSS-first config) |
-| Prisma | To be installed | PostgreSQL ORM for auth |
+| Prisma | ^6.19.3 | PostgreSQL ORM for auth & user management |
 
 ---
 
@@ -128,23 +128,84 @@ CREATE DATABASE validra;
 \q
 ```
 
-### 5. Set Up Prisma (Database ORM)
+### 5. Set Up Prisma with PostgreSQL (Database ORM)
 
-After Prisma is added to the project:
+Prisma is configured as the ORM for Next.js authentication and user management accessing the shared PostgreSQL database.
 
-```bash
-# Generate Prisma Client
-npx prisma generate
+#### 1. Configure Database URL
 
-# Run database migrations
-npx prisma migrate dev --name init
+Ensure your `frontend/.env` file contains your PostgreSQL connection string:
 
-# (Optional) Seed admin user
-npx prisma db seed
+```env
+DATABASE_URL="postgresql://postgres:your_password@localhost:5432/validra"
 ```
 
-> [!NOTE]
-> Prisma handles auth tables (users, sessions, tokens). See [DB Schema Blueprint](../blueprints/db/prisma/schema-blueprint.md) for full table details.
+Replace `postgres` (user), `your_password`, and `validra` (database name) with your local credentials.
+
+#### 2. Prisma Schema (`prisma/schema.prisma`)
+
+The Prisma schema is initialized with the PostgreSQL datasource and client generator:
+
+```prisma
+// frontend/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+#### 3. Prisma Client Singleton (`src/lib/prisma.ts`)
+
+To avoid creating multiple database connections during Next.js hot-reloads in development, use the singleton instance in [`frontend/src/lib/prisma.ts`](../../frontend/src/lib/prisma.ts):
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
+
+export default prisma;
+```
+
+#### 4. Validate Schema
+
+Validate the Prisma configuration at any time without touching database tables:
+
+```bash
+npx prisma validate
+```
+
+> [!CAUTION]
+> **DO NOT CREATE TABLES YET**  
+> Do **NOT** run `npx prisma migrate dev` or `npx prisma db push` at this stage. Table models (users, sessions, accounts) will be defined and created by the team during the dedicated database schema milestone. Keep the schema at connection-only stage until models are explicitly finalized.
+
+#### 5. Future Step: Creating Tables & Migrations (When Models Are Defined)
+
+Once the team commits the model definitions from the [DB Schema Blueprint](../blueprints/db/prisma/schema-blueprint.md):
+
+```bash
+# Generate the Prisma Client types
+npx prisma generate
+
+# Create and apply initial migration to PostgreSQL
+npx prisma migrate dev --name init
+```
 
 ### 6. Install shadcn/ui Components
 

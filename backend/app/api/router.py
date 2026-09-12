@@ -1,12 +1,7 @@
 from fastapi import APIRouter
+from app.api.scans import router as scans_router
 
 router = APIRouter()
 
-
-@router.get("/health", tags=["Health"])
-async def health_check():
-    return {
-        "status": "healthy",
-        "service": "Validra Backend API",
-        "version": "0.1.0"
-    }
+# Include feature routers
+router.include_router(scans_router)

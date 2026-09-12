@@ -1,13 +1,31 @@
+from contextlib import asynccontextmanager
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
 from app.api.router import router
+from app.core.config import settings
+from app.db.session import init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Ensure uploads directory exists
+    upload_path = Path(settings.UPLOAD_DIR)
+    upload_path.mkdir(parents=True, exist_ok=True)
+
+    # Initialize database tables
+    await init_db()
+    yield
+    from app.db.session import engine
+    await engine.dispose()
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -18,16 +36,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
-
-
-@app.get("/")
-async def root():
-    return {
-        "message": "Welcome to Validra Backend API",
-        "docs": "/docs",
-        "health": "/health"
-    }
+# Straightforward API routing under /api
+app.include_router(router, prefix=settings.API_STR)
 
 
 if __name__ == "__main__":

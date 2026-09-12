@@ -41,15 +41,16 @@ Only when:
 ### 5. Default Workflow
 
 1. Understand task
-2. Locate relevant files (check `docs/mapping.md` first)
+2. Locate relevant files first
 3. Read only required code/context
-4. Plan only for large tasks; skip for small changes
-5. Create/update `implementation.md`
-6. Implement code
-7. Test
-8. Fix failures and re-test
-9. Update required documentation
-10. Give concise completion response
+4. Plan only for large tasks;
+5. skip for small changes
+6. take improval of user
+7. Implement code
+8. Test
+9. Fix failures and re-test
+10. Update required documentation
+11. Give concise completion response
 
 ### 6. Browser Interaction
 
@@ -58,24 +59,10 @@ Do NOT use browser for development tasks unless the user explicitly requests it.
 ### 7. Codebase Search
 
 - Search only what the current task requires.
-- Check `docs/mapping.md` first to locate target modules/files and line numbers.
+- Check only relevent folder first to locate target modules/files and line numbers.
 - use smart search or ask user to give location of file or code.
 - Use line-range reads for large files.
 - Prefer `findstr /S /N /I "symbol" *.py *.ts *.tsx` on Windows.
-
-### 8. Documentation
-
-Living docs hierarchy (read in order when needed):
-
-1. `docs/PRD.md` -- product requirements
-2. `docs/Architecture.md` -- system architecture and module boundaries
-3. `docs/Design.md` -- detailed design decisions
-4. `docs/Rules.md` -- project-wide coding and process rules
-5. `docs/team-guide/Team_Role.md` -- team ownership and responsibilities
-6. `docs/team-guide/WORKFLOW_GUIDE.md` -- workflow and domain ownership details
-7. `docs/mapping.md` -- file/module location index with line numbers
-8. `README.md` -- high-level project overview and system design
-9. `docs/memory.md` -- session memory and past decisions
 
 Rules:
 
@@ -101,7 +88,7 @@ Do NOT explain in chat unless the user asks. If asked, write to `temp/explanatio
 Before making architectural or cross-module changes, read:
 
 - `README.md` (System Design and Architecture section)
-- `docs/Architecture.md`
+- `docs/blueprints/` directory
 
 For PR templates or GitHub-related requests, check `.github/` directory, place output in `temp/` folder, and give a short summary in chat.
 
@@ -121,18 +108,17 @@ module/
 
 Keep files small and focused. Follow Single Responsibility Principle. Ensure APIs handle all test cases and runtime errors without silent failure.
 
-### 13. Team Module Ownership (M1-M6) -- CRITICAL
+### 13. Team Module Ownership (M1-M5) -- CRITICAL
 
 Every task belongs to a specific domain owner. See `docs/team-guide/Team_Role.md` and `docs/team-guide/WORKFLOW_GUIDE.md` for full details.
 
-| Module | Domain          | Scope                                                                              | Directory            |
-| ------ | --------------- | ---------------------------------------------------------------------------------- | -------------------- |
-| M1     | Frontend        | Next.js, UI/UX, scanning interface, dashboard, reports, evidence viewer            | `frontend`         |
-| M2     | Backend/Infra   | FastAPI, REST APIs, PostgreSQL, Auth/JWT, RBAC, object storage, task orchestration | `backend`, `db`  |
-| M3     | Computer Vision | OpenCV preprocessing, OCR engine, text detection, bounding boxes, readability      | `cv`               |
-| M4     | Rule Engine     | Legal Metrology rules, validation logic, violation severity, rule repository       | `rule-engine`      |
-| M5     | RAG/AI          | Legal document ingestion, vector embeddings, context retrieval, LLM explanations   | `rag`              |
-| M6     | Research/QA     | Datasets, model benchmarking, rule validation testing, E2E testing                 | `qa`, `research` |
+| Module | Domain          | Scope                                                                               | Directory            |
+| ------ | --------------- | ----------------------------------------------------------------------------------- | -------------------- |
+| M1     | Frontend        | Next.js, UI/UX, scanning interface, dashboard, reports, evidence viewer             | `frontend`         |
+| M2     | Backend/Infra   | FastAPI, REST APIs, PostgreSQL, Auth/JWT, RBAC, object storage, task orchestration  | `backend`, `db`  |
+| M3     | Computer Vision | OpenCV preprocessing, PaddleOCR engine, text detection, bounding boxes, readability | `cv`               |
+| M4     | Rule Engine     | Legal Metrology rules, validation logic, violation severity, rule repository        | `rule-engine`      |
+| M5     | Research/QA     | Datasets, model benchmarking, rule validation testing, E2E testing                  | `qa`, `research` |
 
 Hard rules:
 
@@ -167,13 +153,7 @@ Refer to `docs/Rules.md` for rule definitions and `docs/PRD.md` for compliance r
 - Never let an LLM directly determine the final legal compliance decision.
 - Standard rule fields: `rule_id`, `version`, `condition`, `applicable_category`, `validation_logic`, `severity`, `legal_reference`, `effective_date`.
 
-### 18. RAG Rules (M5)
-
-- Ingest authoritative legal sources (Legal Metrology Act, 2009 and Packaged Commodities Rules, 2011).
-- Preserve source metadata and return exact section citations.
-- RAG provides explanation and citations; it never overrides the deterministic Rule Engine.
-
-### 19. Security Rules
+### 18. Security Rules
 
 Refer to `docs/Architecture.md` for auth flow and `docs/Rules.md` for security policies.
 
@@ -181,20 +161,19 @@ Refer to `docs/Architecture.md` for auth flow and `docs/Rules.md` for security p
 - FastAPI independently verifies JWT signature + expiry + RBAC for EVERY protected endpoint. Never trust frontend authorization alone.
 - Never commit hardcoded secrets, API keys, or `.env` files.
 
-### 20. Database and API Rules (M2)
+### 19. Database and API Rules (M2)
 
 Refer to `docs/Architecture.md` for data model and `docs/backend/` for API specs.
 
 - API contracts must have clear endpoints, Pydantic/Zod request/response schemas, validation, and error handling.
 - Use migrations for DB schema changes. Avoid N+1 queries, use proper indexes, keep DB logic out of the frontend.
 
-### 21. Error Handling
+### 20. Error Handling
 
 - Never fail silently.
 - When OCR or extraction yields low confidence or partial failure, log the error and set inspection status to `NEEDS_REVIEW` for manual inspector review.
-- Never fail silently. When OCR or extraction yields low confidence or partial failure, log the controlled error and set inspection status to `NEEDS_REVIEW` for manual inspector review.
 
-### 22. Git, PR & Final Checklist
+### 21. Git, PR & Final Checklist
 
 Refer to `docs/team-guide/CI_CD_WORKFLOW_AUTOMATION.md` for CI/CD details and `.github/` for PR templates.
 
