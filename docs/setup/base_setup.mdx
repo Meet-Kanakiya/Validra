@@ -7,7 +7,7 @@ description: "Beginner-friendly environment setup for Validra — from scratch t
 
 <p align="center">
   <a href="../README.md">
-    <img src="../Assets/Repo/logo_repo.png" alt="Validra Logo" width="140" />
+    <img src="../../Assets/Repo/logo_repo.png" alt="Validra Logo" width="140" />
   </a>
 </p>
 
@@ -568,31 +568,46 @@ docs/
 
 ```mermaid
 flowchart LR
-    A["✅ Base Setup<br/><b>YOU ARE HERE</b>"] --> B["🎨 Frontend Setup<br/><i>Coming Soon</i>"]
-    A --> C["⚙️ Backend Setup<br/><i>Coming Soon</i>"]
-    B --> D["🚀 Start Building!"]
+    A["✅ Base Setup\n<b>COMPLETE</b>"] --> B["🎨 Frontend Setup"]
+    A --> C["⚙️ Backend Setup"]
+    B --> D["📐 Read Your Blueprint"]
     C --> D
+    D --> E["🚀 Start Building!"]
 
     style A fill:#0d3b0d,stroke:#00c853,color:#fff
     style B fill:#0d1117,stroke:#7c3aed,color:#fff
     style C fill:#0d1117,stroke:#e94560,color:#fff
-    style D fill:#0d1117,stroke:#58a6ff,color:#fff
+    style D fill:#0d1117,stroke:#ffab00,color:#fff
+    style E fill:#0d1117,stroke:#58a6ff,color:#fff
 ```
 
 You've completed the base environment setup! 🎉
 
-### Upcoming Guides
+### Next Steps — Setup Guides
 
-| Guide | What It Covers | Status |
-|-------|---------------|:------:|
-| **Frontend Setup** | Next.js project setup, Tailwind CSS, shadcn/ui, development server | 🔜 Coming Soon |
-| **Backend Setup** | FastAPI project setup, virtual environments, PostgreSQL connection, API development | 🔜 Coming Soon |
+| Guide | What It Covers | Link |
+|-------|---------------|:----:|
+| **Frontend Setup** | Next.js project, Tailwind CSS v4, Prisma, shadcn/ui, dev server | [frontend_setup.mdx](./frontend_setup.mdx) |
+| **Backend Setup** | FastAPI, virtual env, PostgreSQL connection, API development | [backend_setup.mdx](./backend_setup.mdx) |
 
-### In the Meantime
+### Architecture Blueprints
 
-- 📖 Read the [README.md](../README.md) to understand Validra's architecture
+After running setup, read your team's blueprint before writing code:
+
+| Blueprint | Owner | Link |
+|-----------|-------|:----:|
+| Landing Pages | FE-1 | [landing-blueprint.md](../blueprints/frontend/landing/landing-blueprint.md) |
+| Inspector + Auth | FE-2 | [inspector-blueprint.md](../blueprints/frontend/inspector/inspector-blueprint.md) |
+| Admin Portal | FE-3 | [admin-blueprint.md](../blueprints/frontend/admin/admin-blueprint.md) |
+| Backend API | M2 | [backend-blueprint.md](../blueprints/backend/backend-blueprint.md) |
+| Database Schema | All | [schema-blueprint.md](../blueprints/db/prisma/schema-blueprint.md) |
+| Full System | All | [blueprint.md](../blueprint.md) |
+
+### Learn the Basics
+
+- 📖 Read the [README.md](../../README.md) to understand Validra's architecture
 - 🌿 Learn basic Git commands: `git add`, `git commit`, `git push`, `git pull`
-- 🧠 Familiarize yourself with the [project structure](../README.md#-repository-structure)
+- 🧠 Familiarize yourself with the [project structure](../../README.md#-repository-structure)
 
 ---
 
