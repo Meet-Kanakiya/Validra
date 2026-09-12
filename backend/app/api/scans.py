@@ -17,7 +17,7 @@ from app.schemas.scan import (
     ScanDetailResponse,
     ScanUploadResponse,
 )
-from app.services.ocr.ocr_main import run_ocr_pipeline
+from app.services.ocr import run_ocr_pipeline, get_original_image_path
 from app.utils.image_validation import validate_and_read_image
 
 logger = logging.getLogger("validra.scans")
@@ -54,8 +54,7 @@ async def upload_scan(
 
     scan_uuid = uuid.uuid4()
     image_uuid = uuid.uuid4()
-    stored_filename = f"{image_uuid}{ext}"
-    destination_path = upload_dir / stored_filename
+    destination_path = get_original_image_path(str(scan_uuid), ext)
 
     # 3. Write file to disk
     try:
@@ -107,6 +106,15 @@ async def upload_scan(
             scan_id=str(scan_uuid),
             image_path=str(destination_path)
         )
+        # Update inspection status if image failed quality gate
+        if ocr_result.get("status") == "quality_failed":
+            try:
+                inspection.status = "quality_failed"
+                inspection.inspector_remarks = ocr_result.get("message")
+                await db.commit()
+                await db.refresh(inspection)
+            except Exception as db_err:
+                logger.error(f"Failed to update inspection status after quality check failure: {db_err}")
     except Exception as e:
         logger.error(f"OCR pipeline processing failed for scan {scan_uuid}: {e}")
         # Mark inspection as needs_review per system rules without failing upload

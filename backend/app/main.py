@@ -36,8 +36,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.staticfiles import StaticFiles
+
 # Straightforward API routing under /api
 app.include_router(router, prefix=settings.API_STR)
+
+# Mount uploads directory for static image & annotated overlay viewing
+upload_path = Path(settings.UPLOAD_DIR)
+upload_path.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(upload_path)), name="uploads")
 
 
 if __name__ == "__main__":
