@@ -6,7 +6,7 @@ description: "Step-by-step instructions for setting up, configuring, and running
 # ⚙️ Validra — Backend Setup Guide
 
 <p align="center">
-  <a href="../README.md">
+  <a href="../../README.md">
     <img src="../../Assets/Repo/logo_repo.png" alt="Validra Logo" width="140" />
   </a>
 </p>
@@ -18,17 +18,44 @@ description: "Step-by-step instructions for setting up, configuring, and running
 
 ## 📋 System Requirements
 
-| Tool | Recommended Version | Purpose |
+| Tool | Required Version | Purpose |
 | :--- | :--- | :--- |
-| **Python** | 3.10+ | FastAPI Backend & AI Runtime |
-| **pip** | Latest | Package Manager |
-| **Virtualenv** | Built-in (`venv`) | Isolated Python Environment |
+| **Python** | 3.10+ (3.12 recommended) | FastAPI Backend & AI Runtime |
+| **pip** | Latest | Python Package Manager |
+| **PostgreSQL** | 15+ | Database |
+| **Git** | 2.40+ | Version Control |
+
+> [!IMPORTANT]
+> Complete the [Base Setup Guide](./base_setup.mdx) first if you haven't installed these tools.
+
+---
+
+## 📦 Current Stack
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| FastAPI | ≥0.100.0 | Async REST API framework |
+| Uvicorn | ≥0.22.0 | ASGI server with hot reload |
+| Pydantic | ≥2.0.0 | Request/response schemas |
+| pydantic-settings | ≥2.0.0 | Environment-based config |
+| python-dotenv | ≥1.0.0 | .env file loading |
+| pytest | ≥7.4.0 | Unit testing |
+| httpx | ≥0.24.0 | Async HTTP client (for tests) |
+
+**Coming in Phase 1:**
+
+| Package | Purpose |
+|---------|---------|
+| SQLAlchemy[asyncio] ≥2.0 | Async ORM for PostgreSQL |
+| Alembic | Database migrations |
+| python-jose[cryptography] | JWT token verification |
+| Pillow | Image processing / evidence crops |
+| PaddleOCR | OCR engine |
+| ReportLab | PDF report generation |
 
 ---
 
 ## 🚀 Quick Setup (Automated)
-
-Validra includes automated environment setup scripts inside the `backend/` directory.
 
 ### Windows (PowerShell)
 
@@ -52,11 +79,15 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
+The setup script will:
+1. Create a Python virtual environment (`.venv`)
+2. Activate the virtual environment
+3. Copy `.env.example` to `.env` (if not present)
+4. Install all dependencies from `requirements.txt`
+
 ---
 
-## 🛠️ Manual Setup
-
-If you prefer to perform each setup step manually:
+## 🛠️ Manual Setup (Step-by-Step)
 
 ### 1. Navigate to Backend Directory
 
@@ -72,9 +103,16 @@ python -m venv .venv
 
 ### 3. Activate Virtual Environment
 
-- **Windows (PowerShell):** `.venv\Scripts\Activate.ps1`
-- **Windows (CMD):** `.venv\Scripts\activate.bat`
-- **Linux / macOS:** `source .venv/bin/activate`
+| Platform | Command |
+|----------|---------|
+| **Windows (PowerShell)** | `.venv\Scripts\Activate.ps1` |
+| **Windows (CMD)** | `.venv\Scripts\activate.bat` |
+| **Linux / macOS** | `source .venv/bin/activate` |
+
+You should see `(.venv)` at the start of your terminal prompt.
+
+> [!TIP]
+> If PowerShell blocks the activation script, run: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
 
 ### 4. Configure Environment Variables
 
@@ -82,10 +120,47 @@ python -m venv .venv
 cp .env.example .env
 ```
 
+Edit `.env` with your local configuration:
+
+```env
+# ─── App ────────────────────────────────────
+PROJECT_NAME=Validra Base API
+API_V1_STR=/api/v1
+ENV=development
+HOST=0.0.0.0
+PORT=8000
+
+# ─── Database (add when ready) ──────────────
+# DATABASE_URL=postgresql+asyncpg://postgres:your_password@localhost:5432/validra
+
+# ─── JWT (add when auth is integrated) ──────
+# JWT_SECRET_KEY=same-secret-as-nextauth
+# JWT_ALGORITHM=HS256
+
+# ─── Object Storage (add when ready) ────────
+# S3_ENDPOINT=http://localhost:9000
+# S3_ACCESS_KEY=minioadmin
+# S3_SECRET_KEY=minioadmin
+# S3_BUCKET=validra-evidence
+```
+
 ### 5. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
+```
+
+### 6. Create the PostgreSQL Database
+
+If not already created during frontend setup:
+
+```bash
+psql -U postgres
+```
+
+```sql
+CREATE DATABASE validra;
+\q
 ```
 
 ---
@@ -98,44 +173,190 @@ Start the live-reloading development server:
 uvicorn app.main:app --reload
 ```
 
-The FastAPI server will be available at:
+| URL | Purpose |
+| :--- | :--- |
+| `http://127.0.0.1:8000` | API Base URL |
+| `http://127.0.0.1:8000/docs` | Swagger Interactive Docs |
+| `http://127.0.0.1:8000/redoc` | ReDoc Interactive Docs |
+| `http://127.0.0.1:8000/health` | Health Check Endpoint |
 
-- **API Base URL:** `http://127.0.0.1:8000`
-- **Swagger Interactive Docs:** `http://127.0.0.1:8000/docs`
-- **ReDoc Interactive Docs:** `http://127.0.0.1:8000/redoc`
-- **Health Check Endpoint:** `http://127.0.0.1:8000/health`
+> [!TIP]
+> Swagger at `/docs` is the fastest way to test API endpoints during development.
 
 ---
 
-## 🧪 Running Unit Tests
-
-Run the test suite using `pytest`:
+## 🧪 Running Tests
 
 ```bash
 pytest
 ```
 
+Run with verbose output:
+
+```bash
+pytest -v
+```
+
+Run a specific test file:
+
+```bash
+pytest tests/test_main.py -v
+```
+
 ---
 
-## 📁 Directory Structure
+## 📁 Current Directory Structure
 
 ```text
 backend/
 ├── app/
+│   ├── __init__.py
+│   ├── main.py                # FastAPI entrypoint + CORS + health
 │   ├── api/
 │   │   ├── __init__.py
-│   │   └── router.py      # APIRouter definitions & endpoints
-│   ├── core/
-│   │   ├── __init__.py
-│   │   └── config.py      # BaseSettings configuration
-│   ├── __init__.py
-│   └── main.py            # FastAPI entrypoint
+│   │   └── router.py          # APIRouter definitions & endpoints
+│   └── core/
+│       ├── __init__.py
+│       └── config.py          # Pydantic BaseSettings
 ├── tests/
-│   ├── conftest.py        # Pytest fixtures
-│   └── test_main.py       # API tests
+│   ├── conftest.py            # Pytest fixtures
+│   └── test_main.py           # API tests
+├── .env
 ├── .env.example
+├── .venv/                     # Virtual environment (git-ignored)
 ├── requirements.txt
-├── setup.bat
-├── setup.ps1
-└── setup.sh
+├── setup.bat                  # Windows CMD setup
+├── setup.ps1                  # Windows PowerShell setup
+└── setup.sh                   # Linux/macOS setup
 ```
+
+### Target Structure (After Blueprint Implementation)
+
+See [Backend Blueprint](../blueprints/backend/backend-blueprint.md) for the full target directory layout including:
+
+```text
+backend/app/
+├── api/v1/                    # Versioned API routes
+│   ├── scans.py               # POST /scans, GET /scans/{id}
+│   ├── inspections.py         # Inspection CRUD
+│   ├── reports.py             # Report generation
+│   ├── dashboard.py           # Dashboard stats
+│   └── admin/                 # Admin-only endpoints
+├── services/                  # Business logic
+│   ├── scan_orchestrator.py   # Pipeline orchestration
+│   ├── rule_engine.py         # Compliance evaluation
+│   └── rag_service.py         # Legal context retrieval
+├── models/                    # SQLAlchemy ORM models
+├── schemas/                   # Pydantic request/response
+├── reports/                   # PDF generation (ReportLab)
+└── utils/                     # Auth, storage, hashing
+```
+
+---
+
+## 👥 Module Ownership
+
+| Module | Domain | Owner | Directory |
+|--------|--------|-------|-----------|
+| M2 | Backend APIs, orchestration | Backend Lead | `backend/app/api/`, `backend/app/services/` |
+| M3 | Database, Auth integration | Backend + Auth | `backend/app/models/`, `backend/app/utils/auth.py` |
+| M4 | Computer Vision + OCR | CV Lead | `cv/` (separate module, called by backend) |
+| M5 | Rule Engine | ML/Rules Lead | `rule-engine/` (separate module, called by backend) |
+| M6 | RAG + Legal Intelligence | RAG Lead | `rag/` (separate module, called by backend) |
+
+---
+
+## 📖 Blueprints — What to Build
+
+| Blueprint | Location |
+|-----------|----------|
+| Backend API Design | [docs/blueprints/backend/](../blueprints/backend/backend-blueprint.md) |
+| Full System Blueprint | [docs/blueprint.md](../blueprint.md) |
+| Database Schema (Prisma/Auth) | [docs/blueprints/db/prisma/](../blueprints/db/prisma/schema-blueprint.md) |
+
+---
+
+## 🆘 Troubleshooting
+
+<details>
+<summary><strong>"python is not recognized"</strong></summary>
+
+- Ensure Python was installed with "Add to PATH" checked
+- Try `python3` instead of `python`
+- On Windows: Settings → Apps → "App execution aliases" → turn off python.exe entries
+- Restart your terminal
+
+</details>
+
+<details>
+<summary><strong>Virtual environment won't activate (PowerShell)</strong></summary>
+
+Run this once to allow scripts:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+Then try activating again:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+</details>
+
+<details>
+<summary><strong>Port 8000 already in use</strong></summary>
+
+```powershell
+# Find what's using port 8000
+netstat -ano | findstr :8000
+
+# Kill the process
+taskkill /PID <PID> /F
+
+# Or start on a different port
+uvicorn app.main:app --reload --port 8001
+```
+
+</details>
+
+<details>
+<summary><strong>PostgreSQL connection refused</strong></summary>
+
+1. Ensure PostgreSQL service is running:
+   - Windows: Services → `postgresql-x64-16` → Start
+2. Verify port 5432 is open: `psql -U postgres -h localhost -p 5432`
+3. Check `DATABASE_URL` in `.env` matches your credentials
+
+</details>
+
+<details>
+<summary><strong>pip install fails on Windows</strong></summary>
+
+Some packages require C++ build tools. Install:
+
+```powershell
+# Install Microsoft C++ Build Tools
+winget install Microsoft.VisualStudio.2022.BuildTools
+```
+
+Or download from [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+
+</details>
+
+---
+
+<div align="center">
+
+<br/>
+
+**⚙️ Validra Backend — Ready to Build!**
+
+*Check the backend blueprint, set up your first API route, and start orchestrating.* 🚀
+
+<br/>
+
+[← Back to README](../../README.md) · [Base Setup →](./base_setup.mdx) · [Frontend Setup →](./frontend_setup.mdx)
+
+</div>
