@@ -1,13 +1,15 @@
+import inspect
 import pytest
 from sqlalchemy.orm import DeclarativeBase
-from app.db import Base, AsyncSessionLocal, engine, get_db
+from app.db import Base, AsyncSessionLocal, engine, get_db, init_db
+from app.models import Inspection, Image
 
 
-def test_base_declarative():
-    """Verify Base is a DeclarativeBase and has no tables created yet."""
+def test_base_declarative_and_models():
+    """Verify Base is a DeclarativeBase and registered models exist."""
     assert issubclass(Base, DeclarativeBase)
-    # Ensure no tables are defined/created automatically
-    assert len(Base.metadata.tables) == 0
+    assert "inspections" in Base.metadata.tables
+    assert "images" in Base.metadata.tables
 
 
 def test_db_session_and_engine():
@@ -19,5 +21,9 @@ def test_db_session_and_engine():
 
 def test_get_db_generator():
     """Verify get_db is an async generator function."""
-    import inspect
     assert inspect.isasyncgenfunction(get_db)
+
+
+def test_init_db_callable():
+    """Verify init_db is a coroutine function."""
+    assert inspect.iscoroutinefunction(init_db)

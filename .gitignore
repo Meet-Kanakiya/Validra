@@ -61,6 +61,8 @@ dist/
 *.db
 /storage/inspections/*
 !/storage/inspections/.gitkeep
+/backend/uploads/*
+!/backend/uploads/.gitkeep
 
 # IDE & Editor Settings
 .vscode/*
