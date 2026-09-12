@@ -43,15 +43,20 @@ description: "Step-by-step instructions for setting up, configuring, and running
 | httpx | ≥0.24.0 | Async HTTP client (for tests) |
 | SQLAlchemy[asyncio] | ≥2.0.0 | Async ORM for PostgreSQL |
 | asyncpg | ≥0.29.0 | High-performance async PostgreSQL driver |
+| pillow | ≥10.0.0 | Image processing, EXIF transposition & evidence crops |
+| paddlepaddle | ≥3.0.0 | Deep learning inference runtime for OCR |
+| paddleocr | ≥2.8.0 | Text detection, recognition, and layout analysis (PP-OCRv4) |
+| opencv-python-headless | ≥4.8.0 | Quality assessment, CLAHE contrast & spatial geometry |
 
-**Coming in Phase 1:**
+> [!TIP]
+> For platform-specific issues (e.g., Windows Smart App Control, oneDNN PIR configuration, or headless Linux container setup), refer to the dedicated **[PaddleOCR Setup & Troubleshooting Guide](./paddleocr_troubleshooting.mdx)**.
+
+**Coming in Next Phase:**
 
 | Package | Purpose |
 |---------|---------|
 | Alembic | Database migrations |
 | python-jose[cryptography] | JWT token verification |
-| Pillow | Image processing / evidence crops |
-| PaddleOCR | OCR engine |
 | ReportLab | PDF report generation |
 
 ---

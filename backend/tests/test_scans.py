@@ -29,7 +29,7 @@ def test_upload_valid_image(client):
     assert "image_hash" in data
     assert data["status"] == "processing"
     assert "ocr" in data
-    assert data["ocr"]["status"] == "queued"
+    assert data["ocr"]["status"] in ("completed", "queued")
 
 
 def test_upload_image_exceeding_5mb(client):
