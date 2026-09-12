@@ -22,14 +22,18 @@ This document records major architectural decisions, technical conventions, solv
 - **Date**: 2026-09-03
 - **Decision**: AI implementation agents must strictly work within their assigned domain files (M1: Frontend, M2: Backend, M3: DB/Auth, M4: CV/OCR, M5: Rule Engine, M6: RAG). Cross-module changes require explicit dependency documentation.
 - **Rationale**: Prevents AI-agent-driven codebase drift during parallel development across a six-member team.
-- **Status**: Enforced in `.agents/AGENTS.md`.
+### ADR 004: Dual-ORM Architecture & Blueprint Synchronization
+- **Date**: 2026-09-12
+- **Decision**: Aligned system architecture with `docs/blueprints/`: Prisma for Next.js frontend/auth management; SQLAlchemy 2.0 (async) for backend domain entities; standardized on PaddleOCR PP-OCRv4 with confidence gating (threshold ≥ 85%); formalized 26 Legal Metrology compliance checks (C01–C26); eliminated redundant RAG modules and removed `docs/mapping.md`.
+- **Rationale**: Cleanly decouples authentication concerns from async scan orchestration and deterministic statutory compliance validation while keeping documentation synchronized with the system blueprint.
+- **Status**: Accepted & Enforced.
 
 ---
 
 ## Solved Problems & Lessons Learned
 
 - **Problem**: Potential token exhaustion during AI agent development runs.
-  - **Solution**: Implemented 29 token-usage & communication efficiency rules in `.agents/AGENTS.md` and created `docs/mapping.md` for fast line-range inspection and targeted file navigation.
+  - **Solution**: Implemented token-usage & communication efficiency rules in `.agents/AGENTS.md` and streamlined file navigation without separate index mappings.
 
 ---
 
@@ -37,6 +41,8 @@ This document records major architectural decisions, technical conventions, solv
 
 | Date | Component | Description |
 |:-----|:----------|:------------|
-| 2026-09-03 | Workspace Rules | Created `.agents/AGENTS.md` with 20 Validra rules + 29 token efficiency rules |
+| 2026-09-03 | Workspace Rules | Created `.agents/AGENTS.md` with Validra rules + token efficiency guidelines |
 | 2026-09-03 | Architecture Docs | Updated `README.md`, created `docs/PRD.md`, `docs/Architecture.md`, `docs/Design.md` |
-| 2026-09-03 | Living Docs | Created `docs/memory.md`, `docs/Rules.md`, `docs/Team_Role.md`, `docs/mapping.md` |
+| 2026-09-03 | Living Docs | Created `docs/memory.md`, `docs/Rules.md`, `docs/Team_Role.md` |
+| 2026-09-12 | Database Setup | Configured Prisma (^6.19.3) in frontend and SQLAlchemy (2.0 async + asyncpg) in backend; added setup guides with explicit constraint to defer table creation until schema phase |
+| 2026-09-12 | Blueprint Sync | Synchronized `docs/Architecture.md`, `docs/Design.md`, `docs/PRD.md`, `docs/Rules.md`, `README.md`, and `.agents/AGENTS.md` with `docs/blueprints/`; removed `docs/mapping.md` |

@@ -1,0 +1,13 @@
+// frontend/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NOTE: Table models will be created by the team during schema implementation.
+// Do NOT run 'prisma migrate dev' or 'prisma db push' yet.

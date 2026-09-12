@@ -41,12 +41,13 @@ description: "Step-by-step instructions for setting up, configuring, and running
 | python-dotenv | ≥1.0.0 | .env file loading |
 | pytest | ≥7.4.0 | Unit testing |
 | httpx | ≥0.24.0 | Async HTTP client (for tests) |
+| SQLAlchemy[asyncio] | ≥2.0.0 | Async ORM for PostgreSQL |
+| asyncpg | ≥0.29.0 | High-performance async PostgreSQL driver |
 
 **Coming in Phase 1:**
 
 | Package | Purpose |
 |---------|---------|
-| SQLAlchemy[asyncio] ≥2.0 | Async ORM for PostgreSQL |
 | Alembic | Database migrations |
 | python-jose[cryptography] | JWT token verification |
 | Pillow | Image processing / evidence crops |
@@ -130,8 +131,8 @@ ENV=development
 HOST=0.0.0.0
 PORT=8000
 
-# ─── Database (add when ready) ──────────────
-# DATABASE_URL=postgresql+asyncpg://postgres:your_password@localhost:5432/validra
+# ─── Database (PostgreSQL via SQLAlchemy async) ───
+DATABASE_URL=postgresql+asyncpg://postgres:your_password@localhost:5432/validra
 
 # ─── JWT (add when auth is integrated) ──────
 # JWT_SECRET_KEY=same-secret-as-nextauth
@@ -150,17 +151,64 @@ PORT=8000
 pip install -r requirements.txt
 ```
 
-### 6. Create the PostgreSQL Database
+### 6. Set Up PostgreSQL & SQLAlchemy (Database ORM)
 
-If not already created during frontend setup:
+SQLAlchemy 2.0 (async with `asyncpg`) is configured as the backend ORM for FastAPI, handling inspections, rules, violations, audit logs, and compliance records.
+
+#### 1. Create the PostgreSQL Database
+
+If you haven't created the database yet:
 
 ```bash
 psql -U postgres
 ```
 
+In the PostgreSQL prompt:
+
 ```sql
 CREATE DATABASE validra;
 \q
+```
+
+#### 2. Database Connection Architecture
+
+Validra organizes database management inside `app/db/`:
+
+- **[`app/db/base.py`](../../backend/app/db/base.py)**: Modern SQLAlchemy 2.0 `DeclarativeBase` (`Base`).
+- **[`app/db/session.py`](../../backend/app/db/session.py)**: Async engine (`create_async_engine`) and async session factory (`async_sessionmaker`).
+- **`get_db()` dependency**: Asynchronous generator yielding database sessions per API request with automatic commit/cleanup:
+  ```python
+  from fastapi import Depends
+  from sqlalchemy.ext.asyncio import AsyncSession
+  from app.db.session import get_db
+
+  @router.get("/items")
+  async def read_items(db: AsyncSession = Depends(get_db)):
+      ...
+  ```
+
+#### 3. Test Database Configuration
+
+Verify the database module setup without touching PostgreSQL tables:
+
+```bash
+pytest -v tests/test_db.py
+```
+
+> [!CAUTION]
+> **DO NOT CREATE TABLES YET**  
+> Do **NOT** invoke `Base.metadata.create_all()` or run uncoordinated migrations at this stage. Table models (inspections, violations, rules, audit logs) will be created by the team in the dedicated database schema milestone. Keep the database layer at connection-only stage until model schemas are finalized.
+
+#### 4. Future Step: Creating Tables & Migrations (When Models Are Defined)
+
+Once the team defines ORM models in `app/models/`, table creation and migrations will be executed via Alembic:
+
+```bash
+# Generate initial Alembic migration
+alembic revision --autogenerate -m "initial tables"
+
+# Apply migrations to PostgreSQL
+alembic upgrade head
 ```
 
 ---

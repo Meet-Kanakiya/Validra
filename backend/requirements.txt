@@ -5,3 +5,6 @@ pydantic-settings>=2.0.0
 python-dotenv>=1.0.0
 pytest>=7.4.0
 httpx>=0.24.0
+sqlalchemy>=2.0.0
+asyncpg>=0.29.0
+greenlet>=3.0.0
