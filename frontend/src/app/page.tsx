@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { } from "module";
 
 export default function Home() {
   return (
