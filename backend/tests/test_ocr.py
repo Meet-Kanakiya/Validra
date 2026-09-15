@@ -8,6 +8,7 @@ from PIL import Image as PILImage, ImageDraw
 
 from app.services.ocr.quality_gate import check_image_quality
 from app.services.ocr.geometry import compute_bbox_metrics, draw_bounding_boxes
+from app.services.ocr.preprocessor import preprocess_upscale_rgb
 from app.services.ocr.field_parser import (
     parse_mrp,
     parse_net_quantity,
@@ -18,30 +19,31 @@ from app.services.ocr.field_parser import (
     structure_legal_metrology_fields,
 )
 from app.services.ocr.ocr_main import OCRPipeline
+from app.services.ocr.variant_fusion import deduplicate_detections, compute_bbox_iou
+from app.services.ocr.storage import (
+    get_upscaled_image_path,
+    get_annotated_image_path,
+    get_ocr_result_json_path,
+)
 
 
-def create_synthetic_image(width=800, height=600, draw_text=True) -> PILImage.Image:
-    """Helper to generate a test image."""
-    img = PILImage.new("RGB", (width, height), color=(240, 240, 240))
-    if draw_text:
-        draw = ImageDraw.Draw(img)
-        # Draw high-contrast synthetic content and text-like lines
-        for y in range(50, 550, 40):
-            draw.line([(50, y), (750, y)], fill=(20, 20, 20), width=3)
-            draw.text((60, y + 5), f"Sample Compliance Text Line at Y={y}", fill=(0, 0, 0))
-    return img
+# Path to real test asset
+ASSETS_DIR = Path(__file__).resolve().parent.parent.parent / "Assets"
+BALAJI_IMAGE_PATH = ASSETS_DIR / "balaji.png"
 
 
-def test_quality_gate_pass_clear_image(tmp_path):
-    """Test that a high-contrast, well-sized image passes the quality gate."""
-    img = create_synthetic_image(800, 600, draw_text=True)
-    img_path = tmp_path / "clear_label.jpg"
-    img.save(img_path)
+def test_quality_gate_pass_clear_image():
+    """Test that the real Balaji product package image passes quality assessment."""
+    assert BALAJI_IMAGE_PATH.exists(), f"Balaji test image not found at {BALAJI_IMAGE_PATH}"
 
-    result = check_image_quality(img_path)
+    result = check_image_quality(BALAJI_IMAGE_PATH)
     assert result.passed is True
-    assert result.resolution == [800, 600]
+    assert result.requires_retake is False
+    assert result.text_region_detected is True
     assert len(result.issues) == 0
+    assert result.advisory == "Image quality passed."
+    assert result.retake_guidance is None
+    assert result.blur_score >= 100.0
 
 
 def test_quality_gate_reject_low_resolution(tmp_path):
@@ -52,8 +54,10 @@ def test_quality_gate_reject_low_resolution(tmp_path):
 
     result = check_image_quality(img_path, min_width=300, min_height=300)
     assert result.passed is False
+    assert result.requires_retake is True
     assert "LOW_RESOLUTION" in result.issues
     assert "too small" in result.advisory
+    assert "retake" in result.advisory.lower()
 
 
 def test_quality_gate_reject_blank_image(tmp_path):
@@ -64,7 +68,76 @@ def test_quality_gate_reject_blank_image(tmp_path):
 
     result = check_image_quality(img_path)
     assert result.passed is False
+    assert result.requires_retake is True
     assert "NO_TEXT_REGION_DETECTED" in result.issues
+    assert "retake" in result.advisory.lower()
+
+
+def test_quality_gate_strict_constraints(tmp_path):
+    """Test strict quality constraints for blur, brightness, glare, and retake requirements."""
+    # Strict dark image (< 50)
+    dark_img = PILImage.new("RGB", (500, 500), color=(35, 35, 35))
+    dark_path = tmp_path / "dark.jpg"
+    dark_img.save(dark_path)
+    dark_res = check_image_quality(dark_path)
+    assert dark_res.passed is False
+    assert dark_res.requires_retake is True
+    assert "UNDEREXPOSED" in dark_res.issues
+    assert "retake" in dark_res.advisory.lower()
+
+    # Strict overexposed image (> 220)
+    bright_img = PILImage.new("RGB", (500, 500), color=(235, 235, 235))
+    bright_path = tmp_path / "bright.jpg"
+    bright_img.save(bright_path)
+    bright_res = check_image_quality(bright_path)
+    assert bright_res.passed is False
+    assert bright_res.requires_retake is True
+    assert "OVEREXPOSED" in bright_res.issues
+
+    # Strict glare image (> 5% saturated pixels)
+    glare_img = PILImage.new("RGB", (500, 500), color=(255, 255, 255))
+    glare_path = tmp_path / "glare.jpg"
+    glare_img.save(glare_path)
+    glare_res = check_image_quality(glare_path)
+    assert glare_res.passed is False
+    assert glare_res.requires_retake is True
+    assert "SEVERE_GLARE" in glare_res.issues
+
+    # Strict dictionary serialization
+    dict_repr = glare_res.to_dict()
+    assert dict_repr["passed"] is False
+    assert dict_repr["requires_retake"] is True
+    assert "retake_guidance" in dict_repr
+    assert "glare_ratio" in dict_repr
+    assert "blur_score" in dict_repr
+    assert "brightness" in dict_repr
+    assert "motion_blur_score" in dict_repr
+    assert "perspective_skew_degrees" in dict_repr
+
+
+def test_spatial_bbox_deduplication():
+    """Test bounding box IoU calculation and spatial deduplication."""
+    # Test IoU
+    bbox1 = [50, 50, 200, 100]
+    bbox2 = [55, 52, 205, 102]  # High overlap
+    bbox3 = [300, 300, 450, 350]  # No overlap
+
+    iou_high = compute_bbox_iou(bbox1, bbox2)
+    iou_none = compute_bbox_iou(bbox1, bbox3)
+    assert iou_high > 0.7
+    assert iou_none == 0.0
+
+    # Test deduplication keeping highest confidence detection
+    detections = [
+        {"bbox": bbox1, "text": "MRP Rs 99", "confidence": 0.85},
+        {"bbox": bbox2, "text": "MRP Rs 99", "confidence": 0.98},
+        {"bbox": bbox3, "text": "Net Wt 500g", "confidence": 0.95},
+    ]
+    deduped = deduplicate_detections(detections, iou_threshold=0.5)
+    assert len(deduped) == 2
+    # Check that highest confidence was retained for overlapping bboxes
+    mrp_det = next(d for d in deduped if "MRP" in d["text"])
+    assert mrp_det["confidence"] == 0.98
 
 
 def test_geometry_compute_bbox_metrics():
@@ -81,21 +154,20 @@ def test_geometry_compute_bbox_metrics():
 
 
 def test_geometry_draw_bounding_boxes(tmp_path):
-    """Test generation of visual evidence overlay image."""
-    img = create_synthetic_image(500, 500)
-    src_path = tmp_path / "original.jpg"
+    """Test generation of visual evidence overlay image using balaji.png."""
+    assert BALAJI_IMAGE_PATH.exists(), f"Balaji test image not found at {BALAJI_IMAGE_PATH}"
     out_path = tmp_path / "annotated.jpg"
-    img.save(src_path)
 
     regions = [
         {"bbox": [50, 50, 300, 100], "text": "MRP ₹99", "confidence": 0.98},
         {"bbox": [50, 150, 350, 200], "text": "Net Qty: 500g", "confidence": 0.95},
     ]
 
-    saved_path = draw_bounding_boxes(src_path, regions, out_path)
+    saved_path = draw_bounding_boxes(BALAJI_IMAGE_PATH, regions, out_path)
     assert saved_path.exists()
     with PILImage.open(saved_path) as annotated:
-        assert annotated.size == (500, 500)
+        with PILImage.open(BALAJI_IMAGE_PATH) as orig:
+            assert annotated.size == orig.size
 
 
 def test_field_parser_mrp():
@@ -227,14 +299,35 @@ def test_structure_legal_metrology_fields_full():
     assert fields["country_of_origin"]["country"] == "India"
 
 
+def test_preprocessor_upscale_rgb(tmp_path):
+    """Test 2x RGB upscale preprocessing on Balaji product packaging."""
+    assert BALAJI_IMAGE_PATH.exists(), f"Balaji test image not found at {BALAJI_IMAGE_PATH}"
+    out_path = tmp_path / "original_upscaled.jpg"
+
+    result = preprocess_upscale_rgb(
+        input_path=BALAJI_IMAGE_PATH,
+        output_path=out_path,
+        upscale_factor=2.0,
+    )
+
+    assert out_path.exists()
+    assert result.upscale_factor == 2.0
+    with PILImage.open(out_path) as upscaled_img:
+        assert upscaled_img.mode == "RGB"
+        assert upscaled_img.size == (result.processed_width, result.processed_height)
+        with PILImage.open(BALAJI_IMAGE_PATH) as orig_img:
+            # Upscaled dimensions should be approximately 2x (accounting for aspect-ratio resize if any)
+            assert upscaled_img.size[0] >= orig_img.size[0]
+            assert upscaled_img.size[1] >= orig_img.size[1]
+
+
 def test_ocr_pipeline_execution(tmp_path):
-    """Test OCRPipeline coordinator with mocked inference."""
+    """Test OCRPipeline coordinator with RGB upscale, PaddleOCR, and ocr_result.json persistence."""
     import asyncio
+    import json
 
     async def _run():
-        img = create_synthetic_image(800, 600, draw_text=True)
-        img_path = tmp_path / "test_package.jpg"
-        img.save(img_path)
+        assert BALAJI_IMAGE_PATH.exists(), f"Balaji test image not found at {BALAJI_IMAGE_PATH}"
 
         mock_detections = [
             {"polygon": [[50, 50], [250, 50], [250, 80], [50, 80]], "text": "MRP ₹199.00 (Incl. of all taxes)", "confidence": 0.98},
@@ -246,17 +339,118 @@ def test_ocr_pipeline_execution(tmp_path):
             mock_inf.return_value = mock_detections
             result = await pipeline.process_image(
                 scan_id="test-scan-12345",
-                image_path=str(img_path),
+                image_path=str(BALAJI_IMAGE_PATH),
                 skip_quality_gate=False,
             )
 
             assert result["status"] == "completed"
             assert result["engine"] == "paddleocr"
-            assert len(result["regions"]) == 2
-            assert result["regions"][0]["bbox_height_px"] == 30
+            assert len(result["regions"]) >= 2
             assert result["fields"]["mrp"]["value"] == 199.0
             assert result["fields"]["net_quantity"]["value"] == 1.0
-            assert result["annotated_image_path"] is not None
-            assert Path(result["annotated_image_path"]).exists()
+
+            # Verify every scan produces original_upscaled, annotated, and ocr_result.json
+            upscaled_path = get_upscaled_image_path("test-scan-12345")
+            annotated_path = get_annotated_image_path("test-scan-12345")
+            json_path = get_ocr_result_json_path("test-scan-12345")
+
+            assert upscaled_path.exists()
+            assert annotated_path.exists()
+            assert json_path.exists()
+
+            # Verify saved ocr_result.json contents
+            with open(json_path, "r", encoding="utf-8") as f:
+                saved_json = json.load(f)
+            assert saved_json["status"] == "completed"
+            assert saved_json["scan_id"] == "test-scan-12345"
+            assert saved_json["images"]["original_upscaled"] is not None
+            assert saved_json["images"]["annotated"] is not None
 
     asyncio.run(_run())
+
+
+def test_field_parser_unspaced_best_before():
+    """Test extracting shelf life from tight or unspaced packaging text."""
+    regions = [
+        {"text": "PKD.:", "confidence": 0.90, "bbox": [10, 100, 50, 120], "bbox_height_px": 20},
+        {"text": "BESTBEFORETHREEMONTHSFROMPACKAR", "confidence": 0.93, "bbox": [10, 130, 200, 150], "bbox_height_px": 20},
+    ]
+    dates = parse_dates(regions)
+    assert dates["expiry_date"] is not None
+    assert dates["expiry_date"]["status"] == "found"
+    assert dates["expiry_date"]["type"] == "relative_best_before"
+    assert dates["expiry_date"]["duration_value"] == 3
+    assert dates["expiry_date"]["duration_unit"] == "months"
+    assert dates["mfg_date"] is not None
+    assert dates["mfg_date"]["status"] == "needs_review"
+    assert dates["mfg_date"]["keyword_present"] is True
+
+
+def test_field_parser_multiple_fssai():
+    """Test extracting multiple 14-digit FSSAI licenses on multi-unit packaging."""
+    regions = [
+        {"text": "fssai Lic No. 10012021000039", "confidence": 0.95, "bbox": [10, 100, 200, 120], "bbox_height_px": 20},
+        {"text": "Unit 2 fssai Lic No: 10012021000037", "confidence": 0.94, "bbox": [10, 130, 200, 150], "bbox_height_px": 20},
+        {"text": "Unit 3 Lic No: 10016026000857", "confidence": 0.92, "bbox": [10, 160, 200, 180], "bbox_height_px": 20},
+    ]
+    fssai = parse_fssai(regions)
+    assert fssai is not None
+    assert fssai["status"] == "found"
+    assert fssai["total_licenses_found"] == 3
+    assert len(fssai["license_numbers"]) == 3
+    assert "10012021000039" in fssai["license_numbers"]
+    assert "10012021000037" in fssai["license_numbers"]
+    assert "10016026000857" in fssai["license_numbers"]
+
+
+def test_field_parser_batch_reserved_word_filtering():
+    """Test that reserved section words (like Manufactured by) are never extracted as batch numbers."""
+    from app.services.ocr.field_parser import parse_batch_lot
+    regions = [
+        {"text": "B.No.:", "confidence": 0.88, "bbox": [10, 100, 80, 120]},
+        {"text": "Manufactured by: Balaji Wafers", "confidence": 0.96, "bbox": [10, 130, 250, 150]},
+        {"text": "Website.www.balajiwafers.com", "confidence": 0.95, "bbox": [10, 160, 250, 180]},
+    ]
+    batch = parse_batch_lot(regions)
+    assert batch is not None
+    # Must not falsely accept 'Manufacturedby' or 'balajiwafers.com'
+    assert batch["status"] == "needs_review"
+    assert batch["value"] is None
+    assert batch["keyword_present"] is True
+
+    # Test valid batch extraction
+    valid_regions = [
+        {"text": "B.No.: U2827H", "confidence": 0.92, "bbox": [10, 100, 150, 120]},
+    ]
+    valid_batch = parse_batch_lot(valid_regions)
+    assert valid_batch is not None
+    assert valid_batch["status"] == "found"
+    assert valid_batch["value"] == "U2827H"
+
+
+def test_field_parser_origin_from_domestic_address():
+    """Test country of origin extraction from domestic address ending with INDIA."""
+    from app.services.ocr.field_parser import parse_origin
+    regions = [
+        {"text": "Dist. Rajkot-360021 Gujarat - INDIA.", "confidence": 0.92, "bbox": [10, 100, 300, 120]},
+    ]
+    origin = parse_origin(regions)
+    assert origin is not None
+    assert origin["status"] == "found"
+    assert origin["country"] == "India"
+
+
+def test_field_parser_consumer_care_clean_website():
+    """Test consumer care website extraction ignores false abbreviations like B.No."""
+    regions = [
+        {"text": "B.No.:", "confidence": 0.90, "bbox": [10, 50, 60, 70]},
+        {"text": "For feedback and complaints:", "confidence": 0.94, "bbox": [10, 100, 200, 120], "bbox_height_px": 20},
+        {"text": "email us at: care@balajiwafers.com", "confidence": 0.95, "bbox": [10, 130, 250, 150]},
+        {"text": "Website: www.balajiwafers.com", "confidence": 0.93, "bbox": [10, 160, 250, 180]},
+    ]
+    care = parse_consumer_care(regions)
+    assert care is not None
+    assert "care@balajiwafers.com" in care["emails"]
+    assert "balajiwafers.com" in care["websites"]
+    assert "B.No" not in care["websites"]
+

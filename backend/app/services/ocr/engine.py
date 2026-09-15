@@ -96,7 +96,15 @@ class PaddleOCREngine:
 
         try:
             if hasattr(self._ocr_model, "predict"):
-                results = list(self._ocr_model.predict(img_str))
+                try:
+                    results = list(self._ocr_model.predict(
+                        img_str,
+                        text_det_thresh=0.2,
+                        text_det_box_thresh=0.4,
+                        text_det_unclip_ratio=1.6,
+                    ))
+                except (TypeError, ValueError):
+                    results = list(self._ocr_model.predict(img_str))
             else:
                 results = self._ocr_model.ocr(img_str, cls=True)
         except Exception as e:

@@ -17,7 +17,12 @@ from app.schemas.scan import (
     ScanDetailResponse,
     ScanUploadResponse,
 )
-from app.services.ocr import run_ocr_pipeline, get_original_image_path
+from app.services.ocr import (
+    run_ocr_pipeline,
+    get_original_image_path,
+    get_upscaled_image_path,
+    get_annotated_image_path,
+)
 from app.utils.image_validation import validate_and_read_image
 
 logger = logging.getLogger("validra.scans")
@@ -115,6 +120,45 @@ async def upload_scan(
                 await db.refresh(inspection)
             except Exception as db_err:
                 logger.error(f"Failed to update inspection status after quality check failure: {db_err}")
+        else:
+            # Record original_upscaled and annotated images in DB if generated
+            upscaled_path = get_upscaled_image_path(str(scan_uuid))
+            if upscaled_path.exists():
+                try:
+                    upscaled_record = Image(
+                        image_id=uuid.uuid4(),
+                        inspection_id=scan_uuid,
+                        type="upscaled",
+                        storage_path=str(upscaled_path),
+                        file_name="original_upscaled.jpg",
+                        file_size=upscaled_path.stat().st_size,
+                        mime_type="image/jpeg",
+                    )
+                    db.add(upscaled_record)
+                except Exception as img_err:
+                    logger.warning(f"Failed to record upscaled image in DB: {img_err}")
+
+            annotated_path = get_annotated_image_path(str(scan_uuid))
+            if annotated_path.exists():
+                try:
+                    annotated_record = Image(
+                        image_id=uuid.uuid4(),
+                        inspection_id=scan_uuid,
+                        type="annotated",
+                        storage_path=str(annotated_path),
+                        file_name="annotated.jpg",
+                        file_size=annotated_path.stat().st_size,
+                        mime_type="image/jpeg",
+                    )
+                    db.add(annotated_record)
+                except Exception as img_err:
+                    logger.warning(f"Failed to record annotated image in DB: {img_err}")
+
+            try:
+                await db.commit()
+                await db.refresh(inspection)
+            except Exception as db_err:
+                logger.warning(f"Failed to commit artifact images in DB: {db_err}")
     except Exception as e:
         logger.error(f"OCR pipeline processing failed for scan {scan_uuid}: {e}")
         # Mark inspection as needs_review per system rules without failing upload

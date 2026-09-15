@@ -112,8 +112,8 @@ def test_get_scan_by_id(client):
     scan_data = get_res.json()
     assert scan_data["scan_id"] == scan_id
     assert scan_data["status"] == "processing"
-    assert len(scan_data["images"]) == 1
-    assert scan_data["images"][0]["file_name"] == "query_test.png"
+    assert len(scan_data["images"]) >= 1
+    assert any(img["file_name"] == "query_test.png" for img in scan_data["images"])
 
 
 def test_get_scan_invalid_uuid(client):
