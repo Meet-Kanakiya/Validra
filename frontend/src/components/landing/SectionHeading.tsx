@@ -28,22 +28,22 @@ export function SectionHeading({
       )}
     >
       {badge && (
-        <Badge variant="accent" className="px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+        <Badge variant="outline" className="px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-green-50 border-green-200 text-green-800">
           {badge}
         </Badge>
       )}
 
-      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
         {title}{" "}
         {highlight && (
-          <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+          <span className="text-green-700">
             {highlight}
           </span>
         )}
       </h2>
 
       {subtitle && (
-        <p className="text-base sm:text-lg text-zinc-400 leading-relaxed font-normal">
+        <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
           {subtitle}
         </p>
       )}

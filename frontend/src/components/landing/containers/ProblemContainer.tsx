@@ -58,39 +58,39 @@ export function ProblemContainer() {
           return (
             <Card
               key={idx}
-              className="border-zinc-800 bg-zinc-900/60 hover:border-zinc-700/80 transition-all p-6 flex flex-col justify-between group"
+              className="border-slate-200 bg-white hover:border-slate-300 shadow-xs transition-all p-6 rounded-xl flex flex-col justify-between group"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center transition-transform">
                     <Icon className="w-6 h-6" />
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black font-mono text-white block">
+                    <span className="text-2xl font-black font-mono text-slate-900 block">
                       {item.stat}
                     </span>
-                    <span className="text-[11px] font-semibold text-rose-400 uppercase tracking-wider">
+                    <span className="text-[11px] font-semibold text-rose-700 uppercase tracking-wider">
                       {item.badge}
                     </span>
                   </div>
                 </div>
 
                 <CardHeader className="p-0 pb-3">
-                  <CardTitle className="text-xl text-white group-hover:text-rose-300 transition-colors">
+                  <CardTitle className="text-xl text-slate-900 group-hover:text-rose-700 transition-colors">
                     {item.title}
                   </CardTitle>
-                  <CardDescription className="text-sm text-zinc-400 mt-2 leading-relaxed">
+                  <CardDescription className="text-sm text-slate-600 mt-2 leading-relaxed">
                     {item.description}
                   </CardDescription>
                 </CardHeader>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-zinc-800/80">
-                <div className="text-xs text-zinc-300 flex items-start gap-2 bg-zinc-950/60 p-3 rounded-xl border border-zinc-800/60">
-                  <span className="text-rose-400 font-bold shrink-0">Impact:</span>
+              <div className="mt-4 pt-4 border-t border-slate-100">
+                <div className="text-xs text-slate-700 flex items-start gap-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                  <span className="text-rose-700 font-bold shrink-0">Impact:</span>
                   <span className="leading-snug">{item.impact}</span>
                 </div>
-                <div className="mt-2 text-[11px] font-mono text-zinc-400">
+                <div className="mt-2 text-[11px] font-mono text-slate-500">
                   Legal Reference: {item.ruleRef}
                 </div>
               </div>

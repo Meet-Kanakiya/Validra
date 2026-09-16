@@ -1,0 +1,68 @@
+import { FeatureItem } from "@/types/landing";
+
+export const FEATURES: FeatureItem[] = [
+  {
+    id: "label-scanning",
+    icon: "ScanLine",
+    title: "Multi-Angle Label Scanning",
+    description: "Accepts high-resolution retail captures, curved cylindrical packages, and multi-sided commodity wrappers with automated edge unwarping.",
+    badge: "Input Stage",
+    legalRef: "PCR 2011 Rule 6(1)",
+  },
+  {
+    id: "ocr-extraction",
+    icon: "Eye",
+    title: "OCR & Spatial Detection",
+    description: "Detects text regions, font height, character spacing, and coordinates using PaddleOCR optimized for multilingual Indian packaging.",
+    badge: "Vision Engine",
+    legalRef: "PCR 2011 Rule 7",
+  },
+  {
+    id: "declarations-parser",
+    icon: "FileText",
+    title: "Mandatory Declarations Parser",
+    description: "Extracts mandatory statutory entities: MRP, Net Quantity, Date of Manufacture, Manufacturer Details, and Consumer Care contacts.",
+    badge: "Information Extraction",
+    legalRef: "PCR 2011 Rule 6(1)(a-g)",
+  },
+  {
+    id: "deterministic-rules",
+    icon: "Scale",
+    title: "Deterministic Rule Engine",
+    description: "Applies 26 mathematical validation rules without generative models. Flags missing declarations, incorrect unit formats, and illegible font sizes.",
+    badge: "Zero Hallucination",
+    legalRef: "LM Act Section 18",
+  },
+  {
+    id: "rag-intelligence",
+    icon: "Brain",
+    title: "RAG Legal Intelligence",
+    description: "Augments rule findings with statutory citations and relevant case law context for inspector clarification and hearing preparation.",
+    badge: "Legal Metrology RAG",
+    legalRef: "Legal Metrology Act 2009",
+  },
+  {
+    id: "evidence-crop",
+    icon: "Layers",
+    title: "Evidence Cropping & Localization",
+    description: "Preserves exact bounding box visual proof cropped from the original package image, timestamped with geo-coordinates.",
+    badge: "Forensics",
+    legalRef: "Evidence Act Sec 65B",
+  },
+  {
+    id: "tamper-proof-reports",
+    icon: "ShieldCheck",
+    title: "Cryptographic PDF Certificates",
+    description: "Generates tamper-evident inspection reports with embedded SHA-256 signatures, officer credentials, and dynamic verification QR codes.",
+    badge: "Judicial Output",
+    legalRef: "Rule 32 Enforcement",
+  },
+  {
+    id: "enforcement-analytics",
+    icon: "BarChart3",
+    title: "Enforcement Analytics Portal",
+    description: "Centralized supervisor dashboard displaying violation heatmaps by district, recurring offending brands, and inspector throughput.",
+    badge: "Command Center",
+    legalRef: "State Enforcement",
+  },
+];
