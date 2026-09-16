@@ -29,20 +29,20 @@ export function ErrorState({
     <div
       role="alert"
       className={cn(
-        "flex flex-col items-center justify-center text-center p-8 sm:p-12 rounded-2xl border border-rose-500/20 bg-rose-500/5",
+        "flex flex-col items-center justify-center text-center p-8 sm:p-12 rounded-2xl border border-rose-200 bg-rose-50/50 shadow-2xs",
         className
       )}
     >
-      <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mb-4">
+      <div className="w-12 h-12 rounded-xl bg-rose-100/70 border border-rose-200 text-rose-600 flex items-center justify-center mb-4">
         <Icon className="w-6 h-6" aria-hidden="true" />
       </div>
 
-      <h3 className="text-base font-semibold text-zinc-100">
+      <h3 className="text-base font-semibold text-slate-900">
         {title}
       </h3>
 
       {description && (
-        <p className="text-sm text-zinc-400 max-w-sm mt-1.5 leading-relaxed">
+        <p className="text-sm text-slate-600 max-w-sm mt-1.5 leading-relaxed">
           {description}
         </p>
       )}

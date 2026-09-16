@@ -48,16 +48,16 @@ const STATS: StatItem[] = [
 
 const VARIANT_STYLES = {
   primary: {
-    iconWrapper: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    iconWrapper: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   warning: {
-    iconWrapper: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    iconWrapper: "bg-amber-50 text-amber-700 border-amber-200",
   },
   success: {
-    iconWrapper: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    iconWrapper: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   error: {
-    iconWrapper: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+    iconWrapper: "bg-rose-50 text-rose-700 border-rose-200",
   },
 };
 
@@ -75,7 +75,7 @@ export function StatCard({ item }: { item: StatItem }) {
   return (
     <article
       aria-label={`${item.label}: ${item.value}`}
-      className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm flex flex-col justify-between transition-colors"
+      className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs flex flex-col justify-between transition-colors hover:border-emerald-200"
     >
       <div>
         <div
@@ -87,15 +87,15 @@ export function StatCard({ item }: { item: StatItem }) {
           <Icon className="w-5 h-5" aria-hidden="true" />
         </div>
 
-        <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
           {item.label}
         </span>
-        <p className="text-3xl font-bold tracking-tight text-white mt-1">
+        <p className="text-3xl font-bold tracking-tight text-slate-900 mt-1">
           {item.value}
         </p>
       </div>
 
-      <p className="text-xs text-zinc-400 mt-3 pt-3 border-t border-zinc-800/50">
+      <p className="text-xs text-slate-500 mt-3 pt-3 border-t border-slate-100">
         {item.description}
       </p>
     </article>

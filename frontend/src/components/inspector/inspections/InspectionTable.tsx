@@ -53,10 +53,10 @@ function StatusBadge({ status }: { status: InspectionListItem["status"] }) {
 function ScoreIndicator({ score }: { score: number }) {
   const color =
     score >= 90
-      ? "text-emerald-400"
+      ? "text-emerald-700"
       : score >= 75
-      ? "text-amber-400"
-      : "text-rose-400";
+      ? "text-amber-700"
+      : "text-rose-700";
 
   return <span className={cn("font-semibold font-mono", color)}>{score}%</span>;
 }
@@ -73,7 +73,7 @@ export function InspectionTable({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm",
+        "rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs",
         className
       )}
     >
@@ -81,7 +81,7 @@ export function InspectionTable({
       <div className="hidden md:block overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-zinc-800/60 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <tr className="border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500">
               <th scope="col" className="py-3.5 pr-4">
                 Product / Reference ID
               </th>
@@ -102,27 +102,27 @@ export function InspectionTable({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800/40 text-sm">
+          <tbody className="divide-y divide-slate-100 text-sm">
             {items.map((item) => (
               <tr
                 key={item.id}
-                className="hover:bg-zinc-800/30 transition-colors group"
+                className="hover:bg-slate-50/80 transition-colors group"
               >
                 <td className="py-4 pr-4">
-                  <div className="font-medium text-zinc-200">
+                  <div className="font-medium text-slate-900">
                     {item.productName}
                   </div>
-                  <div className="text-xs font-mono text-zinc-400 mt-0.5">
+                  <div className="text-xs font-mono text-slate-400 mt-0.5">
                     {item.code}
                   </div>
                 </td>
-                <td className="py-4 px-4 text-zinc-300 text-xs sm:text-sm">
+                <td className="py-4 px-4 text-slate-600 text-xs sm:text-sm">
                   {item.category}
                 </td>
                 <td className="py-4 px-4 whitespace-nowrap">
                   <StatusBadge status={item.status} />
                 </td>
-                <td className="py-4 px-4 whitespace-nowrap text-zinc-400 text-xs sm:text-sm">
+                <td className="py-4 px-4 whitespace-nowrap text-slate-500 text-xs sm:text-sm">
                   {item.date}
                 </td>
                 <td className="py-4 px-4 text-right whitespace-nowrap">
@@ -133,7 +133,7 @@ export function InspectionTable({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2.5 text-xs text-zinc-400 group-hover:text-emerald-400 gap-1"
+                      className="h-8 px-2.5 text-xs text-slate-500 group-hover:text-emerald-600 gap-1"
                     >
                       <span>View details</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -147,7 +147,7 @@ export function InspectionTable({
       </div>
 
       {/* Mobile Card List */}
-      <div className="md:hidden divide-y divide-zinc-800/60">
+      <div className="md:hidden divide-y divide-slate-100">
         {items.map((item) => (
           <article
             key={item.id}
@@ -156,10 +156,10 @@ export function InspectionTable({
           >
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h3 className="text-sm font-medium text-zinc-200 leading-snug">
+                <h3 className="text-sm font-medium text-slate-900 leading-snug">
                   {item.productName}
                 </h3>
-                <div className="flex items-center gap-2 mt-0.5 text-xs text-zinc-400">
+                <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
                   <span className="font-mono">#{item.code}</span>
                   <span>•</span>
                   <span>{item.category}</span>
@@ -168,7 +168,7 @@ export function InspectionTable({
               <ScoreIndicator score={item.score} />
             </div>
 
-            <div className="flex items-center justify-between text-xs text-zinc-400">
+            <div className="flex items-center justify-between text-xs text-slate-500">
               <StatusBadge status={item.status} />
               <span>{item.date}</span>
             </div>

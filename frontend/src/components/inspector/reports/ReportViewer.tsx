@@ -62,22 +62,22 @@ export function ReportViewer({ report, className }: ReportViewerProps) {
       {/* Official Certificate Banner Header */}
       <section
         aria-label="Official Report Certificate"
-        className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm space-y-4"
+        className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs space-y-4"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800/80">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div className="flex items-start gap-3">
-            <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
               <FileCheck2 className="w-6 h-6" aria-hidden="true" />
             </div>
 
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-mono text-zinc-400">
+                <span className="text-xs font-mono text-slate-400">
                   Certificate #{report.id.toUpperCase()}
                 </span>
                 <ComplianceResultBadge result={report.complianceResult} />
               </div>
-              <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
                 {report.title}
               </h2>
             </div>
@@ -96,37 +96,37 @@ export function ReportViewer({ report, className }: ReportViewerProps) {
         </div>
 
         {/* Certificate Metadata Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs pt-2">
           <div className="space-y-1">
-            <span className="text-zinc-500 flex items-center gap-1.5">
+            <span className="text-slate-500 flex items-center gap-1.5">
               <Tag className="w-3.5 h-3.5" />
               <span>Target Commodity</span>
             </span>
-            <p className="font-medium text-zinc-200 truncate">{report.productName}</p>
+            <p className="font-medium text-slate-800 truncate">{report.productName}</p>
           </div>
 
           <div className="space-y-1">
-            <span className="text-zinc-500 flex items-center gap-1.5">
+            <span className="text-slate-500 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" />
               <span>Date of Issuance</span>
             </span>
-            <p className="font-medium text-zinc-200">{report.generatedAt}</p>
+            <p className="font-medium text-slate-800">{report.generatedAt}</p>
           </div>
 
           <div className="space-y-1">
-            <span className="text-zinc-500 flex items-center gap-1.5">
+            <span className="text-slate-500 flex items-center gap-1.5">
               <UserCheck className="w-3.5 h-3.5" />
               <span>Signatory Officer</span>
             </span>
-            <p className="font-medium text-zinc-200">{report.inspectorName}</p>
+            <p className="font-medium text-slate-800">{report.inspectorName}</p>
           </div>
 
           <div className="space-y-1">
-            <span className="text-zinc-500 flex items-center gap-1.5">
+            <span className="text-slate-500 flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Legal Jurisdiction</span>
             </span>
-            <p className="font-medium text-zinc-200 font-mono">LM Act 2009 / Rules 2011</p>
+            <p className="font-medium text-slate-800 font-mono">LM Act 2009 / Rules 2011</p>
           </div>
         </div>
       </section>
@@ -156,23 +156,23 @@ export function ReportViewer({ report, className }: ReportViewerProps) {
       {report.remarks && (
         <section
           aria-labelledby="report-remarks-title"
-          className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm space-y-2"
+          className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs space-y-2"
         >
           <h3
             id="report-remarks-title"
-            className="text-sm font-semibold text-zinc-200"
+            className="text-sm font-semibold text-slate-900"
           >
             Signatory Officer Remarks & Statutory Citations
           </h3>
-          <p className="text-xs sm:text-sm text-zinc-300 italic bg-zinc-950 p-3.5 rounded-xl border border-zinc-800/60 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-700 italic bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 leading-relaxed">
             &ldquo;{report.remarks}&rdquo;
           </p>
         </section>
       )}
 
       {/* Court Admissibility Legal Disclaimer */}
-      <div className="p-4 rounded-xl border border-zinc-800/60 bg-zinc-950/60 text-xs text-zinc-400 space-y-1 text-center">
-        <p className="font-medium text-zinc-300">
+      <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/80 text-xs text-slate-500 space-y-1 text-center">
+        <p className="font-medium text-slate-700">
           Statutory Audit Notice
         </p>
         <p className="text-[11px] leading-relaxed max-w-2xl mx-auto">

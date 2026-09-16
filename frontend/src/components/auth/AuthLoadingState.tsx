@@ -22,16 +22,16 @@ export function AuthLoadingState({
       role="status"
       aria-live="polite"
       className={cn(
-        "min-h-screen flex flex-col items-center justify-center p-6 bg-zinc-950 text-zinc-100",
+        "min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50 text-slate-900",
         className
       )}
     >
-      <div className="flex flex-col items-center space-y-3 p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/90 shadow-xl shadow-black/20">
+      <div className="flex flex-col items-center space-y-3 p-6 rounded-2xl bg-white border border-slate-200/90 shadow-lg shadow-slate-200/50">
         <Loader2
-          className="w-6 h-6 text-emerald-400 animate-spin"
+          className="w-6 h-6 text-emerald-600 animate-spin"
           aria-hidden="true"
         />
-        <p className="text-sm font-medium text-zinc-300">{message}</p>
+        <p className="text-sm font-medium text-slate-700">{message}</p>
       </div>
     </div>
   );

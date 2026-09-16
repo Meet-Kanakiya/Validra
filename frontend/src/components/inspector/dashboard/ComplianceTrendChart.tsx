@@ -57,25 +57,25 @@ export function ComplianceTrendChart({
     <section
       aria-labelledby="compliance-trend-heading"
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm flex flex-col justify-between",
+        "rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs flex flex-col justify-between",
         className
       )}
     >
       {/* Header */}
-      <div className="flex items-start justify-between pb-4 border-b border-zinc-800/80">
+      <div className="flex items-start justify-between pb-4 border-b border-slate-100">
         <div>
           <h2
             id="compliance-trend-heading"
-            className="text-base sm:text-lg font-semibold text-white tracking-tight"
+            className="text-base sm:text-lg font-semibold text-slate-900 tracking-tight"
           >
             Compliance Trend
           </h2>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Audit pass rate over recent inspection cycles
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
           <TrendingUp className="w-3.5 h-3.5" aria-hidden="true" />
           <span>Avg {averageRate}%</span>
         </div>
@@ -100,7 +100,7 @@ export function ComplianceTrendChart({
                   y1={y}
                   x2={width - paddingX}
                   y2={y}
-                  stroke="#27272a"
+                  stroke="#e2e8f0"
                   strokeDasharray="4 4"
                   strokeWidth="1"
                 />
@@ -108,7 +108,7 @@ export function ComplianceTrendChart({
                   x={paddingX - 10}
                   y={y + 4}
                   textAnchor="end"
-                  className="fill-zinc-500 text-[11px] font-mono select-none"
+                  className="fill-slate-400 text-[11px] font-mono select-none"
                 >
                   {level}%
                 </text>
@@ -120,7 +120,7 @@ export function ComplianceTrendChart({
           <path
             d={pathD}
             fill="none"
-            stroke="#10b981"
+            stroke="#059669"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -130,13 +130,13 @@ export function ComplianceTrendChart({
           <path
             d={`${pathD} L ${coords[coords.length - 1].x} ${height - paddingY} L ${coords[0].x} ${height - paddingY} Z`}
             fill="url(#trend-gradient)"
-            opacity="0.25"
+            opacity="0.15"
           />
 
           <defs>
             <linearGradient id="trend-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#059669" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#059669" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -147,14 +147,14 @@ export function ComplianceTrendChart({
                 cx={c.x}
                 cy={c.y}
                 r="4.5"
-                className="fill-zinc-950 stroke-emerald-400 stroke-2 group-hover:r-6 transition-all"
+                className="fill-white stroke-emerald-600 stroke-2 group-hover:r-6 transition-all"
               />
               {/* Value label above point */}
               <text
                 x={c.x}
                 y={c.y - 10}
                 textAnchor="middle"
-                className="fill-zinc-300 text-[11px] font-mono font-semibold select-none group-hover:fill-emerald-400 transition-colors"
+                className="fill-slate-700 text-[11px] font-mono font-semibold select-none group-hover:fill-emerald-600 transition-colors"
               >
                 {points[i].complianceRate}%
               </text>
@@ -163,7 +163,7 @@ export function ComplianceTrendChart({
                 x={c.x}
                 y={height - paddingY + 18}
                 textAnchor="middle"
-                className="fill-zinc-400 text-xs font-medium select-none"
+                className="fill-slate-500 text-xs font-medium select-none"
               >
                 {points[i].date}
               </text>
@@ -172,9 +172,9 @@ export function ComplianceTrendChart({
         </svg>
       </div>
 
-      <div className="flex items-center justify-between text-xs text-zinc-500 pt-3 border-t border-zinc-800/50">
+      <div className="flex items-center justify-between text-xs text-slate-400 pt-3 border-t border-slate-100">
         <span>Deterministic Rule Evaluation</span>
-        <span className="text-zinc-400 font-mono">LM Rules 2011</span>
+        <span className="text-slate-600 font-mono font-medium">LM Rules 2011</span>
       </div>
     </section>
   );

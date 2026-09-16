@@ -32,8 +32,8 @@ export function PasswordStrengthMeter({
 
   let strengthLabel = "";
   let strengthLevel = 0; // 0 to 4
-  let barColor = "bg-zinc-800";
-  let textColor = "text-zinc-400";
+  let barColor = "bg-slate-200";
+  let textColor = "text-slate-500";
 
   if (!password) {
     strengthLabel = "";
@@ -42,22 +42,22 @@ export function PasswordStrengthMeter({
     strengthLabel = "Weak";
     strengthLevel = 1;
     barColor = "bg-rose-500";
-    textColor = "text-rose-400";
+    textColor = "text-rose-600";
   } else if (passedCriteria === 3) {
     strengthLabel = "Fair";
     strengthLevel = 2;
     barColor = "bg-amber-500";
-    textColor = "text-amber-400";
+    textColor = "text-amber-600";
   } else if (passedCriteria === 4) {
     strengthLabel = "Strong";
     strengthLevel = 3;
-    barColor = "bg-emerald-500";
-    textColor = "text-emerald-400";
+    barColor = "bg-emerald-600";
+    textColor = "text-emerald-700";
   } else {
     strengthLabel = "Very strong";
     strengthLevel = 4;
-    barColor = "bg-emerald-400";
-    textColor = "text-emerald-300";
+    barColor = "bg-emerald-600";
+    textColor = "text-emerald-700";
   }
 
   if (!password) {
@@ -71,7 +71,7 @@ export function PasswordStrengthMeter({
       aria-atomic="true"
     >
       <div className="flex items-center justify-between text-[11px]">
-        <span className="text-zinc-400">Password strength:</span>
+        <span className="text-slate-500">Password strength:</span>
         <span className={cn("font-medium", textColor)}>{strengthLabel}</span>
       </div>
       <div
@@ -87,7 +87,7 @@ export function PasswordStrengthMeter({
             key={step}
             className={cn(
               "h-full rounded-full transition-all duration-300",
-              step <= strengthLevel ? barColor : "bg-zinc-800"
+              step <= strengthLevel ? barColor : "bg-slate-200"
             )}
           />
         ))}

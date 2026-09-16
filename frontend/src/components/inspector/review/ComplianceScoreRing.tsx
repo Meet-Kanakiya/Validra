@@ -30,12 +30,12 @@ export function ComplianceScoreRing({
 
   const strokeColor =
     validScore === null
-      ? "#52525b"
+      ? "#cbd5e1"
       : validScore >= 90
-      ? "#10b981"
+      ? "#059669"
       : validScore >= 75
-      ? "#f59e0b"
-      : "#f43f5e";
+      ? "#d97706"
+      : "#e11d48";
 
   const getStatusBadge = () => {
     switch (status) {
@@ -81,7 +81,7 @@ export function ComplianceScoreRing({
     <div
       aria-label={`Compliance score: ${validScore !== null ? `${validScore}%` : "Unavailable"}, Status: ${status}`}
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center gap-6",
+        "rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center gap-6",
         className
       )}
     >
@@ -98,7 +98,7 @@ export function ComplianceScoreRing({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#27272a"
+            stroke="#f1f5f9"
             strokeWidth={strokeWidth}
             fill="transparent"
           />
@@ -120,15 +120,15 @@ export function ComplianceScoreRing({
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center select-none">
           {validScore !== null ? (
             <>
-              <span className="text-2xl font-bold font-mono tracking-tight text-white">
+              <span className="text-2xl font-bold font-mono tracking-tight text-slate-900">
                 {validScore}%
               </span>
-              <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-medium">
+              <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">
                 Score
               </span>
             </>
           ) : (
-            <span className="text-sm font-semibold text-zinc-400 font-mono">
+            <span className="text-sm font-semibold text-slate-400 font-mono">
               N/A
             </span>
           )}
@@ -138,13 +138,13 @@ export function ComplianceScoreRing({
       {/* Summary Description */}
       <div className="space-y-2 text-center sm:text-left flex-1 min-w-0">
         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
             Automated Audit
           </span>
           {getStatusBadge()}
         </div>
 
-        <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">
+        <h3 className="text-base sm:text-lg font-semibold text-slate-900 tracking-tight">
           {validScore !== null && validScore >= 90
             ? "High Compliance Adherence"
             : validScore !== null && validScore >= 75
@@ -152,7 +152,7 @@ export function ComplianceScoreRing({
             : "Significant Violations Detected"}
         </h3>
 
-        <p className="text-xs text-zinc-400 leading-relaxed max-w-md">
+        <p className="text-xs text-slate-500 leading-relaxed max-w-md">
           Evaluated according to the Legal Metrology (Packaged Commodities) Rules, 2011. Inspect mandatory fields below before making a final determination.
         </p>
       </div>

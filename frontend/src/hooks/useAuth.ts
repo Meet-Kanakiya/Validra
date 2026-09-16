@@ -22,11 +22,34 @@ interface AuthStore {
   error: string | null;
 }
 
+// ============================================================================
+// TODO: TEMPORARY DEVELOPMENT-ONLY AUTHENTICATION BYPASS FOR FRONTEND UI TESTING
+// Allows manual inspection testing of the complete Inspector frontend when backend/DB is not connected.
+// This bypass is strictly disabled in production builds (process.env.NODE_ENV !== "development").
+// To disable in development: set NEXT_PUBLIC_DEV_AUTH_BYPASS=false in frontend/.env
+// ============================================================================
+const IS_DEV_BYPASS_ACTIVE =
+  process.env.NODE_ENV === "development" &&
+  process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
+
+const DEV_INSPECTOR_USER: User = {
+  id: "dev-inspector-01",
+  email: "inspector.sharma@validra.gov.in",
+  fullName: "Inspector Sharma",
+  role: "inspector",
+  isActive: true,
+  isVerified: true,
+  badgeNumber: "LM-DEL-2024-089",
+  jurisdiction: "Delhi NCR - Central Zone",
+  createdAt: "2024-01-01T00:00:00Z",
+  updatedAt: "2024-01-01T00:00:00Z",
+};
+
 // Module-level reactive store shared across components without wrapping root layout
 let authStore: AuthStore = {
-  user: null,
-  isLoading: true, // starts in checking lifecycle state
-  hasChecked: false,
+  user: IS_DEV_BYPASS_ACTIVE ? DEV_INSPECTOR_USER : null,
+  isLoading: IS_DEV_BYPASS_ACTIVE ? false : true,
+  hasChecked: IS_DEV_BYPASS_ACTIVE,
   error: null,
 };
 
@@ -48,6 +71,16 @@ let checkPromise: Promise<User | null> | null = null;
  * Checks in-memory token or HTTP-only cookies if present.
  */
 export async function checkAuth(): Promise<User | null> {
+  if (IS_DEV_BYPASS_ACTIVE) {
+    setStore({
+      user: DEV_INSPECTOR_USER,
+      isLoading: false,
+      hasChecked: true,
+      error: null,
+    });
+    return DEV_INSPECTOR_USER;
+  }
+
   if (checkPromise) return checkPromise;
 
   setStore({ isLoading: true, error: null });
@@ -130,6 +163,18 @@ export function useAuth(): UseAuthReturn {
   const login = React.useCallback(
     async (credentials: LoginRequest): Promise<LoginResponse> => {
       setStore({ isLoading: true, error: null });
+      if (IS_DEV_BYPASS_ACTIVE) {
+        setStore({
+          user: DEV_INSPECTOR_USER,
+          isLoading: false,
+          hasChecked: true,
+        });
+        return {
+          user: DEV_INSPECTOR_USER,
+          accessToken: "dev-mock-bypass-token",
+          tokenType: "Bearer",
+        };
+      }
       try {
         const response = await authService.login(credentials);
         if (response?.user) {
@@ -178,7 +223,9 @@ export function useAuth(): UseAuthReturn {
   const logout = React.useCallback(async (): Promise<void> => {
     setStore({ isLoading: true });
     try {
-      await authService.logout();
+      if (!IS_DEV_BYPASS_ACTIVE) {
+        await authService.logout();
+      }
       setStore({
         user: null,
         isLoading: false,

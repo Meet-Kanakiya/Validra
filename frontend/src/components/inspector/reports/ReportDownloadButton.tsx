@@ -51,12 +51,12 @@ export function ReportDownloadButton({
         size="sm"
         onClick={handleDownload}
         disabled={isDownloading}
-        className="gap-1.5 text-xs font-medium text-zinc-300 hover:text-white border-zinc-700 hover:border-zinc-600 cursor-pointer"
+        className="gap-1.5 text-xs font-medium text-slate-700 hover:text-emerald-800 border-slate-300 hover:border-emerald-400 hover:bg-emerald-50/50 cursor-pointer"
         aria-label="Download inspection report certificate"
       >
         {isDownloading ? (
           <>
-            <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
             <span>Checking export...</span>
           </>
         ) : (
@@ -70,7 +70,7 @@ export function ReportDownloadButton({
       {notice && (
         <div
           role="status"
-          className="flex items-center gap-1.5 text-[11px] text-amber-400/90 pt-1"
+          className="flex items-center gap-1.5 text-[11px] text-amber-700 pt-1"
         >
           <AlertCircle className="w-3 h-3 shrink-0" />
           <span>{notice}</span>

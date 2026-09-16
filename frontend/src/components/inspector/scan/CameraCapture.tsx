@@ -160,7 +160,7 @@ export function CameraCapture({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-4 sm:p-6 space-y-4",
+        "rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 space-y-4 shadow-xs",
         className
       )}
     >
@@ -169,11 +169,11 @@ export function CameraCapture({
       {/* Error state */}
       {cameraError ? (
         <div className="flex flex-col items-center justify-center p-8 text-center space-y-3">
-          <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center">
             <VideoOff className="w-6 h-6" aria-hidden="true" />
           </div>
-          <h4 className="text-sm font-semibold text-zinc-100">Camera Unavailable</h4>
-          <p className="text-xs text-zinc-400 max-w-sm">{cameraError}</p>
+          <h4 className="text-sm font-semibold text-slate-900">Camera Unavailable</h4>
+          <p className="text-xs text-slate-500 max-w-sm">{cameraError}</p>
           <div className="pt-2 flex items-center gap-2">
             <Button
               type="button"
@@ -201,7 +201,7 @@ export function CameraCapture({
       ) : capturedBlobUrl ? (
         /* Captured Snapshot Preview */
         <div className="space-y-4">
-          <div className="relative aspect-[4/3] w-full max-w-lg mx-auto rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden">
+          <div className="relative aspect-[4/3] w-full max-w-lg mx-auto rounded-xl bg-slate-950 border border-slate-200 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={capturedBlobUrl}
@@ -236,9 +236,9 @@ export function CameraCapture({
       ) : (
         /* Live Video Viewfinder */
         <div className="space-y-4">
-          <div className="relative aspect-[4/3] w-full max-w-lg mx-auto rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden flex items-center justify-center">
+          <div className="relative aspect-[4/3] w-full max-w-lg mx-auto rounded-xl bg-slate-950 border border-slate-200 overflow-hidden flex items-center justify-center">
             {isInitializing && (
-              <div className="text-xs text-zinc-400 flex items-center gap-2">
+              <div className="text-xs text-slate-400 flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
                 <span>Starting camera...</span>
               </div>
@@ -254,11 +254,11 @@ export function CameraCapture({
               )}
             />
             {/* Frame alignment overlay */}
-            <div className="absolute inset-6 border border-emerald-500/40 rounded-lg pointer-events-none flex flex-col justify-between p-3">
-              <span className="text-[10px] font-mono text-emerald-400/80 bg-zinc-950/60 px-1.5 py-0.5 rounded self-start">
+            <div className="absolute inset-6 border border-emerald-400/60 rounded-lg pointer-events-none flex flex-col justify-between p-3">
+              <span className="text-[10px] font-mono text-emerald-300 bg-slate-900/80 px-1.5 py-0.5 rounded self-start">
                 Align label text inside box
               </span>
-              <span className="text-[10px] font-mono text-emerald-400/80 bg-zinc-950/60 px-1.5 py-0.5 rounded self-end">
+              <span className="text-[10px] font-mono text-emerald-300 bg-slate-900/80 px-1.5 py-0.5 rounded self-end">
                 Hold still
               </span>
             </div>
@@ -282,7 +282,7 @@ export function CameraCapture({
                 variant="ghost"
                 size="sm"
                 onClick={onCancel}
-                className="text-xs text-zinc-400"
+                className="text-xs text-slate-500 hover:text-slate-900"
               >
                 Cancel
               </Button>

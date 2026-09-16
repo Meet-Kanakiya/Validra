@@ -34,14 +34,14 @@ export function InspectionFilters({
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-zinc-900/40 p-3 sm:p-4 rounded-2xl border border-zinc-800/80",
+        "flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs",
         className
       )}
     >
       {/* Search Input */}
       <div className="relative flex-1 min-w-[240px]">
         <Search
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none"
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
           aria-hidden="true"
         />
         <input
@@ -49,7 +49,7 @@ export function InspectionFilters({
           value={filters.search}
           onChange={(e) => onChange({ ...filters, search: e.target.value })}
           placeholder="Search by product, category, or INS-ID..."
-          className="w-full pl-10 pr-4 py-2 text-sm bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-colors"
+          className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
           aria-label="Search inspections"
         />
       </div>
@@ -58,7 +58,7 @@ export function InspectionFilters({
       <div className="flex items-center gap-2.5">
         <div className="relative flex items-center">
           <Filter
-            className="absolute left-3 w-3.5 h-3.5 text-zinc-400 pointer-events-none"
+            className="absolute left-3 w-3.5 h-3.5 text-slate-400 pointer-events-none"
             aria-hidden="true"
           />
           <select
@@ -69,11 +69,11 @@ export function InspectionFilters({
                 status: e.target.value as InspectionStatusType,
               })
             }
-            className="pl-8 pr-8 py-2 text-sm bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 appearance-none cursor-pointer"
+            className="pl-8 pr-8 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer"
             aria-label="Filter by inspection status"
           >
             {STATUS_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value} className="bg-zinc-900 text-zinc-200">
+              <option key={opt.value} value={opt.value} className="bg-white text-slate-800">
                 {opt.label}
               </option>
             ))}
@@ -87,7 +87,7 @@ export function InspectionFilters({
             variant="ghost"
             size="sm"
             onClick={onReset}
-            className="h-9 px-2.5 text-xs text-zinc-400 hover:text-white"
+            className="h-9 px-2.5 text-xs text-slate-500 hover:text-slate-900 hover:bg-slate-100"
             aria-label="Clear all active filters"
           >
             <X className="w-3.5 h-3.5 mr-1" />

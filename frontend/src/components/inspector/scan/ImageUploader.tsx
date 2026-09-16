@@ -133,19 +133,19 @@ export function ImageUploader({
       {validationError && (
         <div
           role="alert"
-          className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs"
+          className="flex items-center gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"
         >
-          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" aria-hidden="true" />
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" aria-hidden="true" />
           <span>{validationError}</span>
         </div>
       )}
 
       {/* Preview View when file is selected */}
       {selectedFile && previewUrl ? (
-        <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-4 sm:p-5 space-y-4">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 space-y-4 shadow-xs">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
             {/* Image Preview Thumbnail */}
-            <div className="relative w-full sm:w-48 h-48 rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden flex items-center justify-center shrink-0">
+            <div className="relative w-full sm:w-48 h-48 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewUrl}
@@ -156,14 +156,14 @@ export function ImageUploader({
 
             {/* File Info & Replace/Remove Actions */}
             <div className="flex-1 min-w-0 space-y-2 w-full">
-              <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-emerald-700 text-xs font-semibold uppercase tracking-wider">
                 <ImageIcon className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Image Ready for Inspection</span>
               </div>
-              <h4 className="text-sm font-semibold text-zinc-100 truncate">
+              <h4 className="text-sm font-semibold text-slate-900 truncate">
                 {selectedFile.name}
               </h4>
-              <p className="text-xs text-zinc-400 font-mono">
+              <p className="text-xs text-slate-500 font-mono">
                 Size: {formatBytes(selectedFile.size)} • Type: {selectedFile.type || "image"}
               </p>
 
@@ -185,7 +185,7 @@ export function ImageUploader({
                   size="sm"
                   onClick={handleRemove}
                   disabled={disabled}
-                  className="gap-1.5 text-xs h-8 text-rose-400 hover:text-rose-300 hover:border-rose-500/40"
+                  className="gap-1.5 text-xs h-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50 hover:border-rose-300"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Remove</span>
@@ -211,25 +211,25 @@ export function ImageUploader({
           role="button"
           aria-label="Upload package label image. Drag and drop file or click to select."
           className={cn(
-            "relative flex flex-col items-center justify-center p-8 sm:p-12 rounded-2xl border-2 border-dashed transition-all cursor-pointer select-none text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50",
+            "relative flex flex-col items-center justify-center p-8 sm:p-12 rounded-2xl border-2 border-dashed transition-all cursor-pointer select-none text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/30",
             isDragOver
-              ? "border-emerald-500 bg-emerald-500/5"
-              : "border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 hover:bg-zinc-900/60",
+              ? "border-emerald-600 bg-emerald-50/50"
+              : "border-slate-300 hover:border-emerald-500 bg-slate-50/60 hover:bg-emerald-50/20",
             disabled && "opacity-50 pointer-events-none cursor-not-allowed"
           )}
         >
-          <div className="w-12 h-12 rounded-xl bg-zinc-800/80 border border-zinc-700/60 text-zinc-300 flex items-center justify-center mb-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center mb-4">
             <UploadCloud className="w-6 h-6" aria-hidden="true" />
           </div>
 
-          <h3 className="text-sm sm:text-base font-semibold text-zinc-200">
+          <h3 className="text-sm sm:text-base font-semibold text-slate-900">
             Click to upload or drag and drop package photo
           </h3>
-          <p className="text-xs text-zinc-400 max-w-sm mt-1 leading-relaxed">
+          <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
             Ensure MRP, Net Quantity, Mfg Date, and Manufacturer declarations are clearly visible.
           </p>
 
-          <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-800/60 text-[11px] font-mono text-zinc-400 border border-zinc-700/50">
+          <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white text-[11px] font-mono text-slate-500 border border-slate-200 shadow-2xs">
             <span>JPG, PNG, WEBP, BMP</span>
             <span>•</span>
             <span>Max 5MB</span>

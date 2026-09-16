@@ -43,9 +43,9 @@ export function InspectorShell({ children, className }: InspectorShellProps) {
   }, [isMobileMenuOpen]);
 
   return (
-    <div className={cn("min-h-screen bg-zinc-950 text-zinc-100 flex flex-col antialiased", className)}>
+    <div className={cn("min-h-screen bg-slate-50 text-slate-900 flex flex-col antialiased", className)}>
       {/* Desktop Fixed Sidebar */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 z-30 border-r border-zinc-800/80 bg-zinc-950">
+      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 z-30 border-r border-slate-200/80 bg-white shadow-xs">
         <InspectorSidebar />
       </aside>
 
@@ -59,19 +59,19 @@ export function InspectorShell({ children, className }: InspectorShellProps) {
         >
           {/* Backdrop Overlay */}
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-slate-950/40 backdrop-blur-xs transition-opacity"
             onClick={() => setIsMobileMenuOpen(false)}
             aria-hidden="true"
           />
 
           {/* Drawer Canvas */}
-          <div className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-zinc-950 border-r border-zinc-800 p-4 flex flex-col shadow-2xl z-50 animate-in slide-in-from-left duration-200">
+          <div className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white border-r border-slate-200 p-4 flex flex-col shadow-2xl z-50 animate-in slide-in-from-left duration-200">
             {/* Close Button Header */}
             <div className="flex justify-end mb-1">
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 cursor-pointer"
+                className="p-1.5 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 cursor-pointer"
                 aria-label="Close navigation menu"
               >
                 <X className="w-5 h-5" />

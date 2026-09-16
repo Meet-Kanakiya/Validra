@@ -10,19 +10,19 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "md", ...props }, ref) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 disabled:pointer-events-none disabled:opacity-50 select-none active:scale-[0.98] cursor-pointer";
+      "inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:pointer-events-none disabled:opacity-50 select-none active:scale-[0.98] cursor-pointer";
 
     const variants = {
       default:
-        "bg-emerald-500 text-zinc-950 hover:bg-emerald-400 font-semibold shadow-md shadow-emerald-500/25",
+        "bg-emerald-600 text-white hover:bg-emerald-700 font-semibold shadow-sm shadow-emerald-600/25",
       secondary:
-        "bg-zinc-800 text-zinc-100 hover:bg-zinc-700 border border-zinc-700/60 shadow-sm",
+        "bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200/90 shadow-2xs",
       outline:
-        "border border-zinc-700 bg-transparent hover:bg-zinc-800/80 text-zinc-200 hover:text-white",
-      ghost: "text-zinc-300 hover:bg-zinc-800/60 hover:text-white",
-      glow: "relative bg-gradient-to-r from-emerald-500 to-teal-400 text-zinc-950 font-semibold shadow-[0_0_20px_rgba(16,185,129,0.35)] hover:shadow-[0_0_30px_rgba(16,185,129,0.55)] hover:brightness-105",
+        "border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-2xs",
+      ghost: "text-slate-600 hover:bg-emerald-50 hover:text-emerald-800",
+      glow: "relative bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-md shadow-emerald-600/20 hover:shadow-lg hover:shadow-emerald-600/30 hover:brightness-105",
       destructive:
-        "bg-rose-600 text-white hover:bg-rose-500 shadow-md shadow-rose-600/25",
+        "bg-rose-600 text-white hover:bg-rose-700 shadow-sm shadow-rose-600/25",
     };
 
     const sizes = {

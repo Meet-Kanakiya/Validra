@@ -95,7 +95,7 @@ export function InspectorHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-20 h-16 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl px-4 sm:px-6 lg:px-8 flex items-center justify-between",
+        "sticky top-0 z-20 h-16 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-xl px-4 sm:px-6 lg:px-8 flex items-center justify-between shadow-xs",
         className
       )}
     >
@@ -104,18 +104,18 @@ export function InspectorHeader({
         <button
           type="button"
           onClick={onOpenMobileMenu}
-          className="lg:hidden p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 cursor-pointer"
+          className="lg:hidden p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 cursor-pointer"
           aria-label="Open navigation menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 hidden sm:inline">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 hidden sm:inline">
             Validra
           </span>
-          <span className="text-zinc-400 hidden sm:inline">/</span>
-          <h1 className="text-sm sm:text-base font-semibold text-white tracking-tight">
+          <span className="text-slate-300 hidden sm:inline">/</span>
+          <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
             {getBreadcrumbTitle(pathname || "")}
           </h1>
         </div>
@@ -133,23 +133,23 @@ export function InspectorHeader({
             }}
             aria-expanded={isNotificationOpen}
             aria-label="View notifications"
-            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 relative cursor-pointer"
+            className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 relative cursor-pointer"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-600" />
           </button>
 
           {isNotificationOpen && (
-            <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-zinc-900 border border-zinc-800 p-4 shadow-2xl z-50 text-left animate-in fade-in slide-in-from-top-2 duration-150">
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                <p className="text-xs font-semibold text-white">Notifications</p>
-                <span className="text-[10px] text-emerald-400 font-medium bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white border border-slate-200 p-4 shadow-xl z-50 text-left animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <p className="text-xs font-semibold text-slate-900">Notifications</p>
+                <span className="text-[10px] text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   Live
                 </span>
               </div>
               <div className="py-6 text-center space-y-1.5">
-                <ShieldAlert className="w-6 h-6 text-zinc-400 mx-auto" aria-hidden="true" />
-                <p className="text-xs text-zinc-400">No new notifications</p>
+                <ShieldAlert className="w-6 h-6 text-slate-400 mx-auto" aria-hidden="true" />
+                <p className="text-xs text-slate-500">No new notifications</p>
               </div>
             </div>
           )}
@@ -166,37 +166,37 @@ export function InspectorHeader({
             aria-expanded={isUserMenuOpen}
             aria-haspopup="menu"
             aria-label="User account menu"
-            className="flex items-center gap-2.5 p-1 sm:px-2.5 sm:py-1.5 rounded-xl text-zinc-300 hover:text-white hover:bg-zinc-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 cursor-pointer"
+            className="flex items-center gap-2.5 p-1 sm:px-2.5 sm:py-1.5 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center text-xs font-bold">
               {initials}
             </div>
             <div className="hidden md:flex flex-col text-left leading-tight">
-              <span className="text-xs font-semibold text-zinc-100 max-w-[120px] truncate">
+              <span className="text-xs font-semibold text-slate-900 max-w-[120px] truncate">
                 {displayName}
               </span>
-              <span className="text-[10px] text-zinc-400 truncate">
+              <span className="text-[10px] text-slate-500 truncate">
                 Inspector
               </span>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-zinc-400 hidden sm:block" aria-hidden="true" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" aria-hidden="true" />
           </button>
 
           {isUserMenuOpen && (
             <div
               role="menu"
-              className="absolute right-0 mt-2 w-60 rounded-2xl bg-zinc-900 border border-zinc-800 p-2 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-left"
+              className="absolute right-0 mt-2 w-60 rounded-2xl bg-white border border-slate-200 p-2 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-left"
             >
               {/* Account identity */}
-              <div className="px-3 py-2 border-b border-zinc-800/80 mb-1">
-                <p className="text-xs font-semibold text-white truncate">
+              <div className="px-3 py-2 border-b border-slate-100 mb-1">
+                <p className="text-xs font-semibold text-slate-900 truncate">
                   {displayName}
                 </p>
-                <p className="text-[11px] text-zinc-400 truncate">
+                <p className="text-[11px] text-slate-500 truncate">
                   {displayEmail}
                 </p>
                 <div className="mt-1.5">
-                  <span className="text-[9.5px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span className="text-[9.5px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Inspector Officer
                   </span>
                 </div>
@@ -208,9 +208,9 @@ export function InspectorHeader({
                   href="/profile"
                   role="menuitem"
                   onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800/60 rounded-xl transition-colors"
+                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors"
                 >
-                  <UserIcon className="w-3.5 h-3.5 text-zinc-400" />
+                  <UserIcon className="w-3.5 h-3.5 text-slate-400" />
                   <span>My Profile</span>
                 </Link>
 
@@ -221,7 +221,7 @@ export function InspectorHeader({
                     setIsUserMenuOpen(false);
                     await logout();
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-colors text-left cursor-pointer"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors text-left cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Sign out</span>

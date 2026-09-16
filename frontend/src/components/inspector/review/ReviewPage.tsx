@@ -76,10 +76,10 @@ export function ReviewPage({ initialData }: ReviewPageProps) {
       {isFinalized && (
         <div
           role="status"
-          className="p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in duration-300"
+          className="p-4 rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-800 flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in duration-300"
         >
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" aria-hidden="true" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" aria-hidden="true" />
             <span className="text-sm font-semibold">
               Inspection finalized and signed into statutory record.
             </span>

@@ -101,16 +101,16 @@ export function InspectorSidebar({ onNavigate, className }: InspectorSidebarProp
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50",
+                "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40",
                 active
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 font-semibold shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 border border-transparent"
+                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200/80 font-semibold shadow-2xs"
+                  : "text-slate-600 hover:text-emerald-800 hover:bg-emerald-50/60 border border-transparent"
               )}
             >
               <Icon
                 className={cn(
                   "w-4 h-4 transition-colors flex-shrink-0",
-                  active ? "text-emerald-400" : "text-zinc-400 group-hover:text-zinc-200"
+                  active ? "text-emerald-700" : "text-slate-400 group-hover:text-emerald-700"
                 )}
               />
               <span>{item.label}</span>
@@ -122,23 +122,23 @@ export function InspectorSidebar({ onNavigate, className }: InspectorSidebarProp
   );
 
   return (
-    <div className={cn("flex flex-col h-full", className)}>
+    <div className={cn("flex flex-col h-full bg-white", className)}>
       {/* Branding Header */}
-      <div className="px-5 py-5 border-b border-zinc-800/80 flex items-center justify-between">
-        <Logo size="sm" showSubtitle={true} />
+      <div className="px-5 py-5 border-b border-slate-100 flex items-center justify-between">
+        <Logo size="sm" showSubtitle={true} theme="light" />
       </div>
 
       {/* Navigation Links Area */}
       <nav className="flex-1 px-3 py-5 space-y-6 overflow-y-auto" aria-label="Inspector navigation">
         <div>
-          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400 select-none">
+          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 select-none">
             Inspection
           </p>
           {renderNavList(MAIN_NAV_ITEMS)}
         </div>
 
         <div>
-          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400 select-none">
+          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 select-none">
             Workspace
           </p>
           {renderNavList(SECONDARY_NAV_ITEMS)}
@@ -146,12 +146,12 @@ export function InspectorSidebar({ onNavigate, className }: InspectorSidebarProp
       </nav>
 
       {/* Footer / Institutional Badge */}
-      <div className="p-4 border-t border-zinc-800/80 mt-auto">
-        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-xs text-zinc-400">
-          <Shield className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+      <div className="p-4 border-t border-slate-100 mt-auto">
+        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/70 text-xs text-emerald-800">
+          <Shield className="w-4 h-4 text-emerald-700 flex-shrink-0" aria-hidden="true" />
           <div className="flex flex-col leading-tight min-w-0">
-            <span className="font-medium text-zinc-200 truncate">Legal Metrology</span>
-            <span className="text-[10px] text-zinc-400">Act, 2009 &bull; GoI</span>
+            <span className="font-semibold text-emerald-950 truncate">Legal Metrology</span>
+            <span className="text-[10px] text-emerald-700">Act, 2009 &bull; GoI</span>
           </div>
         </div>
       </div>

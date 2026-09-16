@@ -104,7 +104,7 @@ export function LoginForm() {
         <div
           role="alert"
           aria-live="polite"
-          className="flex items-start gap-2.5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 text-xs leading-relaxed"
+          className="flex items-start gap-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs leading-relaxed"
         >
           <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
@@ -113,7 +113,7 @@ export function LoginForm() {
               <div className="mt-1">
                 <Link
                   href={`/verify-email?email=${encodeURIComponent(email.trim())}`}
-                  className="text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-2"
+                  className="text-emerald-700 hover:text-emerald-800 font-medium underline underline-offset-2"
                 >
                   Go to email verification &rarr;
                 </Link>
@@ -126,7 +126,7 @@ export function LoginForm() {
       <div>
         <label
           htmlFor="login-email"
-          className="block text-xs font-medium text-zinc-300 mb-1.5"
+          className="block text-xs font-semibold text-slate-700 mb-1.5"
         >
           Email address
         </label>
@@ -148,14 +148,14 @@ export function LoginForm() {
           aria-invalid={Boolean(errors.email)}
           aria-describedby={errors.email ? "email-error" : undefined}
           className={cn(
-            "w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+            "w-full px-3.5 py-2.5 rounded-xl bg-slate-50/70 border text-slate-900 placeholder-slate-400 text-sm focus:bg-white focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
             errors.email
-              ? "border-rose-500/80 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
-              : "border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+              ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+              : "border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20"
           )}
         />
         {errors.email && (
-          <p id="email-error" role="alert" className="text-xs text-rose-400 mt-1.5">
+          <p id="email-error" role="alert" className="text-xs text-rose-600 mt-1.5 font-medium">
             {errors.email}
           </p>
         )}
@@ -165,7 +165,7 @@ export function LoginForm() {
       <div>
         <label
           htmlFor="login-password"
-          className="block text-xs font-medium text-zinc-300 mb-1.5"
+          className="block text-xs font-semibold text-slate-700 mb-1.5"
         >
           Password
         </label>
@@ -188,17 +188,17 @@ export function LoginForm() {
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? "password-error" : undefined}
             className={cn(
-              "w-full px-3.5 py-2.5 pr-10 rounded-xl bg-zinc-950 border text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+              "w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-50/70 border text-slate-900 placeholder-slate-400 text-sm focus:bg-white focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
               errors.password
-                ? "border-rose-500/80 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
-                : "border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                : "border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20"
             )}
           />
           <button
             type="button"
             disabled={isSubmitting}
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 rounded-lg transition-colors disabled:pointer-events-none"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/30 rounded-lg transition-colors disabled:pointer-events-none"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
@@ -209,7 +209,7 @@ export function LoginForm() {
           </button>
         </div>
         {errors.password && (
-          <p id="password-error" role="alert" className="text-xs text-rose-400 mt-1.5">
+          <p id="password-error" role="alert" className="text-xs text-rose-600 mt-1.5 font-medium">
             {errors.password}
           </p>
         )}
@@ -217,7 +217,7 @@ export function LoginForm() {
 
       {/* Remember Me & Forgot Password Row */}
       <div className="flex items-center justify-between text-xs pt-1">
-        <label className="flex items-center gap-2 cursor-pointer select-none text-zinc-300 hover:text-zinc-200">
+        <label className="flex items-center gap-2 cursor-pointer select-none text-slate-600 hover:text-slate-800">
           <input
             type="checkbox"
             id="remember-me"
@@ -225,13 +225,13 @@ export function LoginForm() {
             checked={rememberMe}
             disabled={isSubmitting}
             onChange={(e) => setRememberMe(e.target.checked)}
-            className="w-4 h-4 rounded border-zinc-700 bg-zinc-950 text-emerald-500 focus:ring-emerald-500/30 focus:ring-offset-0 focus:ring-1 cursor-pointer accent-emerald-500"
+            className="w-4 h-4 rounded border-slate-300 bg-white text-emerald-600 focus:ring-emerald-500/30 focus:ring-offset-0 focus:ring-1 cursor-pointer accent-emerald-600"
           />
           <span>Remember me</span>
         </label>
         <Link
           href="/forgot-password"
-          className="text-zinc-400 hover:text-emerald-400 font-medium transition-colors focus-visible:outline-none focus-visible:underline"
+          className="text-slate-500 hover:text-emerald-700 font-medium transition-colors focus-visible:outline-none focus-visible:underline"
         >
           Forgot password?
         </Link>
@@ -241,7 +241,7 @@ export function LoginForm() {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-11 text-sm font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 shadow-md shadow-emerald-500/25 transition-all mt-2"
+        className="w-full h-11 text-sm font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/25 transition-all mt-2"
       >
         {isSubmitting ? (
           <>
@@ -254,11 +254,11 @@ export function LoginForm() {
       </Button>
 
       {/* Register Link */}
-      <div className="pt-2 text-center text-xs text-zinc-400">
+      <div className="pt-2 text-center text-xs text-slate-500">
         Don&apos;t have an account?{" "}
         <Link
           href="/register"
-          className="text-emerald-400 hover:text-emerald-300 font-medium underline-offset-4 hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-400 rounded-sm"
+          className="text-emerald-600 hover:text-emerald-700 font-semibold underline-offset-4 hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 rounded-xs"
         >
           Create one
         </Link>

@@ -46,7 +46,7 @@ export function ReportCard({ report, className }: ReportCardProps) {
     <article
       aria-labelledby={`report-title-${report.id}`}
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm flex flex-col justify-between space-y-4 hover:border-zinc-700/80 transition-all",
+        "rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs flex flex-col justify-between space-y-4 hover:border-emerald-300 hover:shadow-sm transition-all",
         className
       )}
     >
@@ -54,11 +54,11 @@ export function ReportCard({ report, className }: ReportCardProps) {
         {/* Header with Reference and Result Badge */}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-zinc-400">
+            <span className="text-xs font-mono text-slate-400">
               #{report.id.toUpperCase()}
             </span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-xs font-mono text-zinc-400">
+            <span className="text-slate-300">•</span>
+            <span className="text-xs font-mono text-slate-400">
               {report.inspectionCode}
             </span>
           </div>
@@ -70,23 +70,23 @@ export function ReportCard({ report, className }: ReportCardProps) {
         <div>
           <h3
             id={`report-title-${report.id}`}
-            className="text-base font-semibold text-zinc-100 leading-snug"
+            className="text-base font-semibold text-slate-900 leading-snug"
           >
             {report.title}
           </h3>
-          <p className="text-xs text-zinc-400 mt-0.5 line-clamp-1">
-            Product: <span className="text-zinc-300 font-medium">{report.productName}</span>
+          <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
+            Product: <span className="text-slate-700 font-medium">{report.productName}</span>
           </p>
         </div>
 
         {/* Metadata items */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-zinc-400 pt-2 border-t border-zinc-800/60">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500 pt-2 border-t border-slate-100">
           <span className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-zinc-500" aria-hidden="true" />
+            <Calendar className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
             <span>Generated: {report.generatedAt}</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <Tag className="w-3.5 h-3.5 text-zinc-500" aria-hidden="true" />
+            <Tag className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
             <span className="font-mono">
               Score: {report.complianceScore !== null ? `${report.complianceScore}%` : "N/A"}
             </span>
@@ -95,12 +95,12 @@ export function ReportCard({ report, className }: ReportCardProps) {
       </div>
 
       {/* Action Footer */}
-      <div className="pt-3 border-t border-zinc-800/60 flex items-center justify-end">
+      <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
         <Link href={`/reports/${report.id}`}>
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-2.5 text-xs text-zinc-300 hover:text-emerald-400 gap-1.5 cursor-pointer"
+            className="h-8 px-2.5 text-xs text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 gap-1.5 cursor-pointer"
           >
             <FileText className="w-3.5 h-3.5" />
             <span>View Full Report</span>

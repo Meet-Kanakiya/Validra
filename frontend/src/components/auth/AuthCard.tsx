@@ -42,7 +42,7 @@ export function AuthCard({
 }: AuthCardProps) {
   return (
     <section aria-labelledby={title ? "auth-card-title" : undefined} className={cn("w-full max-w-md mx-auto", className)}>
-      <Card className="border-zinc-800/90 bg-zinc-900/80 shadow-2xl p-6 sm:p-8">
+      <Card className="border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 p-6 sm:p-8">
         {(showLogo || headerAction || title || description) && (
           <CardHeader className="flex flex-col items-center text-center pb-6 pt-0 px-0">
             {showLogo && (
@@ -56,12 +56,12 @@ export function AuthCard({
               </div>
             )}
             {title && (
-              <CardTitle id="auth-card-title" className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              <CardTitle id="auth-card-title" className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
                 {title}
               </CardTitle>
             )}
             {description && (
-              <CardDescription className="text-sm text-zinc-400 mt-1.5 max-w-xs">
+              <CardDescription className="text-sm text-slate-500 mt-1.5 max-w-xs">
                 {description}
               </CardDescription>
             )}
@@ -73,7 +73,7 @@ export function AuthCard({
         </CardContent>
 
         {footer && (
-          <CardFooter className="px-0 pb-0 pt-6 border-t border-zinc-800/80 flex flex-col items-center justify-center text-xs text-zinc-400">
+          <CardFooter className="px-0 pb-0 pt-6 border-t border-slate-100 flex flex-col items-center justify-center text-xs text-slate-500">
             {footer}
           </CardFooter>
         )}

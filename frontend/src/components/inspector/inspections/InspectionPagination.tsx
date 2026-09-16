@@ -48,15 +48,15 @@ export function InspectionPagination({
     <nav
       aria-label="Inspections pagination"
       className={cn(
-        "flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-zinc-800/80 text-xs text-zinc-400",
+        "flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100 text-xs text-slate-500",
         className
       )}
     >
       <div>
         Showing{" "}
-        <span className="font-medium text-zinc-200">{startItem}</span> to{" "}
-        <span className="font-medium text-zinc-200">{endItem}</span> of{" "}
-        <span className="font-medium text-zinc-200">{totalItems}</span> inspections
+        <span className="font-medium text-slate-900">{startItem}</span> to{" "}
+        <span className="font-medium text-slate-900">{endItem}</span> of{" "}
+        <span className="font-medium text-slate-900">{totalItems}</span> inspections
       </div>
 
       <div className="flex items-center gap-1.5">
@@ -67,7 +67,7 @@ export function InspectionPagination({
           size="sm"
           disabled={currentPage <= 1}
           onClick={() => onPageChange(currentPage - 1)}
-          className="h-8 px-2.5 text-xs text-zinc-300 disabled:opacity-40"
+          className="h-8 px-2.5 text-xs text-slate-600 disabled:opacity-40"
           aria-label="Go to previous page"
         >
           <ChevronLeft className="w-3.5 h-3.5 mr-1" />
@@ -86,14 +86,14 @@ export function InspectionPagination({
                 className={cn(
                   "w-8 h-8 rounded-lg text-xs font-medium transition-colors cursor-pointer",
                   p === currentPage
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold"
-                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/60"
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-300 font-semibold"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                 )}
               >
                 {p}
               </button>
             ) : (
-              <span key={`ellipsis-${idx}`} className="px-1 text-zinc-600 select-none">
+              <span key={`ellipsis-${idx}`} className="px-1 text-slate-400 select-none">
                 {p}
               </span>
             )
@@ -107,7 +107,7 @@ export function InspectionPagination({
           size="sm"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(currentPage + 1)}
-          className="h-8 px-2.5 text-xs text-zinc-300 disabled:opacity-40"
+          className="h-8 px-2.5 text-xs text-slate-600 disabled:opacity-40"
           aria-label="Go to next page"
         >
           <span>Next</span>

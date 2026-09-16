@@ -80,10 +80,10 @@ function StatusIndicator({ status }: { status: InspectionStatus }) {
 function ScoreIndicator({ score }: { score: number }) {
   const textColor =
     score >= 90
-      ? "text-emerald-400"
+      ? "text-emerald-700"
       : score >= 75
-      ? "text-amber-400"
-      : "text-rose-400";
+      ? "text-amber-700"
+      : "text-rose-700";
 
   return <span className={cn("font-semibold font-mono", textColor)}>{score}%</span>;
 }
@@ -105,27 +105,27 @@ export function RecentInspections({
     <section
       aria-labelledby="recent-inspections-title"
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm",
+        "rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs",
         className
       )}
     >
       {/* Header with View All Link */}
-      <div className="flex items-center justify-between pb-4 border-b border-zinc-800/80">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-200/80">
         <div>
           <h2
             id="recent-inspections-title"
-            className="text-base sm:text-lg font-semibold text-white tracking-tight"
+            className="text-base sm:text-lg font-bold text-slate-900 tracking-tight"
           >
             Recent Inspections
           </h2>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Latest product compliance audits and determinations
           </p>
         </div>
 
         <Link
           href="/inspections"
-          className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-zinc-400 hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 rounded-md px-1.5 py-1"
+          className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-slate-500 hover:text-emerald-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 rounded-md px-1.5 py-1"
         >
           <span>View all</span>
           <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
@@ -136,7 +136,7 @@ export function RecentInspections({
       <div className="hidden md:block overflow-hidden pt-2">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-zinc-800/60 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <tr className="border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500">
               <th scope="col" className="py-3.5 pr-4">
                 Product / Inspection
               </th>
@@ -151,24 +151,24 @@ export function RecentInspections({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800/40 text-sm">
+          <tbody className="divide-y divide-slate-100 text-sm">
             {inspections.map((item) => (
               <tr
                 key={item.id}
-                className="hover:bg-zinc-800/30 transition-colors"
+                className="hover:bg-slate-50/80 transition-colors"
               >
                 <td className="py-4 pr-4">
-                  <div className="font-medium text-zinc-200">
+                  <div className="font-semibold text-slate-800">
                     {item.productName}
                   </div>
-                  <div className="text-xs font-mono text-zinc-400 mt-0.5">
+                  <div className="text-xs font-mono text-slate-400 mt-0.5">
                     {item.code}
                   </div>
                 </td>
                 <td className="py-4 px-4 whitespace-nowrap">
                   <StatusIndicator status={item.status} />
                 </td>
-                <td className="py-4 px-4 whitespace-nowrap text-zinc-400 text-xs sm:text-sm">
+                <td className="py-4 px-4 whitespace-nowrap text-slate-500 text-xs sm:text-sm">
                   {item.date}
                 </td>
                 <td className="py-4 pl-4 text-right whitespace-nowrap">
@@ -181,7 +181,7 @@ export function RecentInspections({
       </div>
 
       {/* Mobile Card List View (visible only on small mobile screens to prevent horizontal scroll) */}
-      <div className="md:hidden divide-y divide-zinc-800/60 pt-2">
+      <div className="md:hidden divide-y divide-slate-100 pt-2">
         {inspections.map((item) => (
           <article
             key={item.id}
@@ -190,17 +190,17 @@ export function RecentInspections({
           >
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h3 className="text-sm font-medium text-zinc-200 leading-snug">
+                <h3 className="text-sm font-semibold text-slate-800 leading-snug">
                   {item.productName}
                 </h3>
-                <span className="text-xs font-mono text-zinc-400">
+                <span className="text-xs font-mono text-slate-400">
                   #{item.code}
                 </span>
               </div>
               <ScoreIndicator score={item.score} />
             </div>
 
-            <div className="flex items-center justify-between text-xs text-zinc-400">
+            <div className="flex items-center justify-between text-xs text-slate-500">
               <StatusIndicator status={item.status} />
               <span>{item.date}</span>
             </div>

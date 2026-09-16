@@ -67,13 +67,13 @@ export default function NewScanPage() {
       />
 
       {/* Instructions Card */}
-      <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
         <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
             <ShieldCheck className="w-5 h-5" aria-hidden="true" />
           </div>
-          <div className="text-xs text-zinc-300 leading-relaxed">
-            <span className="font-semibold text-white block mb-0.5">
+          <div className="text-xs text-slate-600 leading-relaxed">
+            <span className="font-semibold text-slate-900 block mb-0.5">
               Legal Metrology (Packaged Commodities) Guidelines
             </span>
             Capture a well-lit, non-blurry image. Ensure mandatory declarations (MRP, Net Quantity, Mfg/Pack Date, Batch No, and Manufacturer Address) are squarely visible.
@@ -81,7 +81,7 @@ export default function NewScanPage() {
         </div>
 
         {/* Input Mode Selector */}
-        <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-800 shrink-0 self-stretch sm:self-auto justify-center">
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0 self-stretch sm:self-auto justify-center">
           <button
             type="button"
             onClick={() => setMode("upload")}
@@ -89,8 +89,8 @@ export default function NewScanPage() {
             className={cn(
               "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
               mode === "upload"
-                ? "bg-zinc-800 text-white font-semibold shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-white text-emerald-800 font-semibold shadow-xs border border-slate-200/60"
+                : "text-slate-600 hover:text-slate-900"
             )}
           >
             <UploadCloud className="w-3.5 h-3.5" />
@@ -103,8 +103,8 @@ export default function NewScanPage() {
             className={cn(
               "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
               mode === "camera"
-                ? "bg-zinc-800 text-white font-semibold shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-white text-emerald-800 font-semibold shadow-xs border border-slate-200/60"
+                : "text-slate-600 hover:text-slate-900"
             )}
           >
             <Camera className="w-3.5 h-3.5" />

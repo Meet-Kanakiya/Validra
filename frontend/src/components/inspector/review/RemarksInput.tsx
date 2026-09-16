@@ -25,24 +25,24 @@ export function RemarksInput({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm space-y-3",
+        "rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs space-y-3",
         className
       )}
     >
       <div className="flex items-center justify-between">
         <label
           htmlFor="inspector-remarks-field"
-          className="flex items-center gap-2 text-sm font-semibold text-zinc-200"
+          className="flex items-center gap-2 text-sm font-semibold text-slate-900"
         >
-          <MessageSquare className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+          <MessageSquare className="w-4 h-4 text-emerald-600" aria-hidden="true" />
           <span>Inspector Remarks & Observations</span>
         </label>
-        <span className="text-xs font-mono text-zinc-500">
+        <span className="text-xs font-mono text-slate-400">
           {charactersRemaining} characters remaining
         </span>
       </div>
 
-      <p className="text-xs text-zinc-400">
+      <p className="text-xs text-slate-500">
         Record statutory notes, discrepancies, or context to be appended to the official inspection audit record.
       </p>
 
@@ -53,7 +53,7 @@ export function RemarksInput({
         disabled={disabled}
         rows={4}
         placeholder="Enter official inspector remarks, statutory notices issued, or reasons for review decision..."
-        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 disabled:opacity-50 transition-colors resize-y min-h-[96px]"
+        className="w-full rounded-xl border border-slate-300 bg-slate-50/70 p-3 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:opacity-50 transition-colors resize-y min-h-[96px]"
       />
     </div>
   );

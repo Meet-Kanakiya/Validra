@@ -58,7 +58,7 @@ export function VerifyEmailCard({ email, className }: VerifyEmailCardProps) {
     <div className={cn("flex flex-col items-center text-center space-y-5", className)}>
       {/* Visual Mail Icon */}
       <div
-        className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/5"
+        className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shadow-md shadow-emerald-500/10"
         aria-hidden="true"
       >
         <MailCheck className="w-7 h-7" />
@@ -66,19 +66,19 @@ export function VerifyEmailCard({ email, className }: VerifyEmailCardProps) {
 
       {/* Heading & Instructions */}
       <div className="space-y-2">
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
           Check your email
         </h2>
-        <p className="text-sm text-zinc-400 max-w-sm mx-auto leading-relaxed">
+        <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
           We&apos;ve sent a verification link to your email address. Please check your inbox and follow the link to verify your account.
         </p>
       </div>
 
       {/* Optional Email Address Badge */}
       {email && (
-        <div className="w-full px-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-400">
+        <div className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500">
           <span>Verification email sent to </span>
-          <span className="font-semibold text-zinc-200 break-all">{email}</span>
+          <span className="font-semibold text-slate-800 break-all">{email}</span>
         </div>
       )}
 
@@ -87,9 +87,9 @@ export function VerifyEmailCard({ email, className }: VerifyEmailCardProps) {
         <div
           role="status"
           aria-live="polite"
-          className="flex items-center justify-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-medium w-full"
+          className="flex items-center justify-center gap-2 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium w-full"
         >
-          <CheckCircle2 className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+          <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600" aria-hidden="true" />
           <span>{statusMessage}</span>
         </div>
       )}
@@ -100,7 +100,7 @@ export function VerifyEmailCard({ email, className }: VerifyEmailCardProps) {
           type="button"
           onClick={handleResend}
           disabled={isSending || cooldown > 0}
-          className="w-full h-11 text-sm font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 shadow-md shadow-emerald-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full h-11 text-sm font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isSending ? (
             <>
@@ -115,16 +115,16 @@ export function VerifyEmailCard({ email, className }: VerifyEmailCardProps) {
         </Button>
 
         {/* Navigation Links */}
-        <div className="flex items-center justify-between gap-4 pt-2 text-xs text-zinc-400">
+        <div className="flex items-center justify-between gap-4 pt-2 text-xs text-slate-500">
           <Link
             href="/login"
-            className="hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:underline"
+            className="hover:text-emerald-700 transition-colors focus-visible:outline-none focus-visible:underline font-medium"
           >
             Back to sign in
           </Link>
           <Link
             href="/register"
-            className="hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:underline"
+            className="hover:text-emerald-700 transition-colors focus-visible:outline-none focus-visible:underline font-medium"
           >
             Use a different email
           </Link>

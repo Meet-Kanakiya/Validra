@@ -68,21 +68,21 @@ export function ProcessingStatus({
       role="status"
       aria-live="polite"
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-6 sm:p-8 space-y-6 shadow-sm",
+        "rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 space-y-6 shadow-xs",
         className
       )}
     >
-      <div className="flex items-center justify-between pb-4 border-b border-zinc-800/80">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-100">
         <div>
-          <h2 className="text-base sm:text-lg font-semibold text-white tracking-tight">
+          <h2 className="text-base sm:text-lg font-semibold text-slate-900 tracking-tight">
             Inspection Analysis in Progress
           </h2>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Automated legal metrology verification pipeline
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
           <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
           <span>Stage {currentStepNum} of 4</span>
         </div>
@@ -91,9 +91,9 @@ export function ProcessingStatus({
       {isFailed && error && (
         <div
           role="alert"
-          className="flex items-center gap-2.5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs"
+          className="flex items-center gap-2.5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"
         >
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" aria-hidden="true" />
+          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" aria-hidden="true" />
           <span>{error}</span>
         </div>
       )}
@@ -112,20 +112,20 @@ export function ProcessingStatus({
               className={cn(
                 "flex items-start gap-4 p-3.5 rounded-xl border transition-colors",
                 isDone
-                  ? "border-emerald-500/20 bg-emerald-500/5 text-zinc-200"
+                  ? "border-emerald-200 bg-emerald-50/50 text-slate-800"
                   : isCurrent
-                  ? "border-zinc-700 bg-zinc-800/50 text-zinc-100"
-                  : "border-zinc-800/50 bg-zinc-950/40 text-zinc-500 opacity-60"
+                  ? "border-emerald-300 bg-emerald-50/20 text-slate-900 shadow-2xs"
+                  : "border-slate-200/60 bg-slate-50/40 text-slate-400 opacity-60"
               )}
             >
               <div
                 className={cn(
                   "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border transition-colors",
                   isDone
-                    ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
+                    ? "bg-emerald-100 border-emerald-200 text-emerald-700"
                     : isCurrent
-                    ? "bg-zinc-800 border-zinc-700 text-emerald-400 animate-pulse"
-                    : "bg-zinc-900 border-zinc-800 text-zinc-600"
+                    ? "bg-emerald-600 border-emerald-600 text-white animate-pulse"
+                    : "bg-slate-100 border-slate-200 text-slate-400"
                 )}
               >
                 {isDone ? (
@@ -138,10 +138,10 @@ export function ProcessingStatus({
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium leading-tight">
+                <p className="text-sm font-semibold leading-tight">
                   {step.label}
                 </p>
-                <p className="text-xs text-zinc-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   {step.description}
                 </p>
               </div>

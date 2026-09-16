@@ -35,38 +35,38 @@ export function EvidenceViewer({ images, className }: EvidenceViewerProps) {
     <section
       aria-labelledby="evidence-viewer-title"
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm flex flex-col justify-between",
+        "rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs flex flex-col justify-between",
         className
       )}
     >
       {/* Header with Zoom Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-zinc-800/80">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
         <div>
           <h2
             id="evidence-viewer-title"
-            className="text-base sm:text-lg font-semibold text-white tracking-tight"
+            className="text-base sm:text-lg font-semibold text-slate-900 tracking-tight"
           >
             Package Evidence Viewer
           </h2>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Original scan and cropped declaration bounding boxes
           </p>
         </div>
 
         {/* Zoom Control Buttons */}
-        <div className="flex items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+        <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border border-slate-200">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={handleZoomOut}
             disabled={zoomLevel <= 0.75 || !activeImage?.imageUrl || imageError}
-            className="h-7 w-7 p-0 text-zinc-300"
+            className="h-7 w-7 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
             aria-label="Zoom out evidence image"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </Button>
-          <span className="text-[11px] font-mono text-zinc-400 px-1 select-none">
+          <span className="text-[11px] font-mono text-slate-600 px-1 select-none">
             {Math.round(zoomLevel * 100)}%
           </span>
           <Button
@@ -75,7 +75,7 @@ export function EvidenceViewer({ images, className }: EvidenceViewerProps) {
             size="sm"
             onClick={handleZoomIn}
             disabled={zoomLevel >= 2.5 || !activeImage?.imageUrl || imageError}
-            className="h-7 w-7 p-0 text-zinc-300"
+            className="h-7 w-7 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
             aria-label="Zoom in evidence image"
           >
             <ZoomIn className="w-3.5 h-3.5" />
@@ -86,7 +86,7 @@ export function EvidenceViewer({ images, className }: EvidenceViewerProps) {
             size="sm"
             onClick={handleResetZoom}
             disabled={zoomLevel === 1 || !activeImage?.imageUrl || imageError}
-            className="h-7 w-7 p-0 text-zinc-300"
+            className="h-7 w-7 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
             aria-label="Reset zoom level to 100%"
           >
             <Maximize2 className="w-3.5 h-3.5" />
@@ -95,16 +95,16 @@ export function EvidenceViewer({ images, className }: EvidenceViewerProps) {
       </div>
 
       {/* Main Image Viewport */}
-      <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] my-4 rounded-xl bg-zinc-950 border border-zinc-800/80 overflow-hidden flex items-center justify-center">
+      <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] my-4 rounded-xl bg-slate-950 border border-slate-200 overflow-hidden flex items-center justify-center">
         {imageError || !activeImage || !activeImage.imageUrl ? (
           <div className="flex flex-col items-center justify-center text-center p-6 space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center">
               <ImageOff className="w-5 h-5" aria-hidden="true" />
             </div>
-            <p className="text-xs font-medium text-zinc-300">
+            <p className="text-xs font-medium text-slate-800">
               Evidence Image Preview Unavailable
             </p>
-            <p className="text-[11px] text-zinc-500 max-w-xs leading-relaxed">
+            <p className="text-[11px] text-slate-500 max-w-xs leading-relaxed">
               Original scan image stored on server disk. Check server upload storage.
             </p>
           </div>
@@ -137,8 +137,8 @@ export function EvidenceViewer({ images, className }: EvidenceViewerProps) {
               className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium transition-colors shrink-0 cursor-pointer",
                 idx === selectedIndex
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                  : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-white"
+                  ? "bg-emerald-50 border-emerald-300 text-emerald-800 font-semibold"
+                  : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               )}
             >
               <ImageIcon className="w-3.5 h-3.5" aria-hidden="true" />
@@ -150,7 +150,7 @@ export function EvidenceViewer({ images, className }: EvidenceViewerProps) {
 
       {/* Image caption footer */}
       {activeImage && (
-        <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-3 border-t border-zinc-800/50">
+        <div className="flex items-center justify-between text-[11px] text-slate-500 pt-3 border-t border-slate-100">
           <span>{activeImage.title}</span>
           <span className="font-mono uppercase">{activeImage.type}</span>
         </div>

@@ -23,8 +23,8 @@ export function LoadingState({
         className
       )}
     >
-      <Loader2 className="w-8 h-8 text-emerald-400 animate-spin mb-3" aria-hidden="true" />
-      <span className="text-sm font-medium text-zinc-400">{message}</span>
+      <Loader2 className="w-8 h-8 text-emerald-600 animate-spin mb-3" aria-hidden="true" />
+      <span className="text-sm font-medium text-slate-600">{message}</span>
       <span className="sr-only">Loading content, please wait.</span>
     </div>
   );

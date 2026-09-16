@@ -21,16 +21,16 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-zinc-800/80",
+        "flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-200/80",
         className
       )}
     >
       <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
           {title}
         </h1>
         {description && (
-          <p className="text-sm text-zinc-400 leading-relaxed max-w-2xl">
+          <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">
             {description}
           </p>
         )}

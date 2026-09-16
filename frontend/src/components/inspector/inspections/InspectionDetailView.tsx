@@ -74,17 +74,17 @@ export function InspectionDetailView({
       {/* Top Meta Summary Card */}
       <section
         aria-label="Inspection Overview"
-        className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm space-y-4"
+        className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs space-y-4"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800/80">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-mono text-zinc-400">
+              <span className="text-xs font-mono text-slate-400">
                 #{inspection.code}
               </span>
               <StatusIndicator status={inspection.status} />
             </div>
-            <h2 className="text-lg sm:text-xl font-bold text-white">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900">
               {inspection.productName}
             </h2>
           </div>
@@ -102,7 +102,7 @@ export function InspectionDetailView({
 
             {inspection.reportId && (
               <Link href={`/reports/${inspection.reportId}`}>
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs text-emerald-400 border-emerald-500/30">
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs text-emerald-700 border-emerald-300 hover:bg-emerald-50">
                   <FileText className="w-3.5 h-3.5" />
                   <span>View Report</span>
                 </Button>
@@ -110,7 +110,7 @@ export function InspectionDetailView({
             )}
 
             <Link href="/inspections">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-zinc-400">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-slate-500 hover:text-slate-900">
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>All Inspections</span>
               </Button>
@@ -121,37 +121,37 @@ export function InspectionDetailView({
         {/* Metadata Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
           <div className="space-y-1">
-            <span className="text-zinc-500 flex items-center gap-1.5">
+            <span className="text-slate-500 flex items-center gap-1.5">
               <Tag className="w-3.5 h-3.5" />
               <span>Category</span>
             </span>
-            <p className="font-medium text-zinc-200">{inspection.category}</p>
+            <p className="font-medium text-slate-800">{inspection.category}</p>
           </div>
 
           <div className="space-y-1">
-            <span className="text-zinc-500 flex items-center gap-1.5">
+            <span className="text-slate-500 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" />
               <span>Audit Date</span>
             </span>
-            <p className="font-medium text-zinc-200">{inspection.date}</p>
+            <p className="font-medium text-slate-800">{inspection.date}</p>
           </div>
 
           <div className="space-y-1">
-            <span className="text-zinc-500 flex items-center gap-1.5">
+            <span className="text-slate-500 flex items-center gap-1.5">
               <UserCheck className="w-3.5 h-3.5" />
               <span>Assigned Inspector</span>
             </span>
-            <p className="font-medium text-zinc-200">
+            <p className="font-medium text-slate-800">
               {inspection.inspectorName || "Metrology Officer"}
             </p>
           </div>
 
           <div className="space-y-1">
-            <span className="text-zinc-500 flex items-center gap-1.5">
+            <span className="text-slate-500 flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5" />
               <span>Statutory Rules</span>
             </span>
-            <p className="font-medium text-zinc-200 font-mono">LM Rules 2011</p>
+            <p className="font-medium text-slate-800 font-mono">LM Rules 2011</p>
           </div>
         </div>
       </section>
@@ -181,15 +181,15 @@ export function InspectionDetailView({
       {inspection.remarks && (
         <section
           aria-labelledby="inspection-remarks-heading"
-          className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 sm:p-6 shadow-sm space-y-2"
+          className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs space-y-2"
         >
           <h3
             id="inspection-remarks-heading"
-            className="text-sm font-semibold text-zinc-200"
+            className="text-sm font-semibold text-slate-900"
           >
             Inspector Audit Remarks
           </h3>
-          <p className="text-xs sm:text-sm text-zinc-300 italic bg-zinc-950 p-3.5 rounded-xl border border-zinc-800/60 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-700 italic bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 leading-relaxed">
             &ldquo;{inspection.remarks}&rdquo;
           </p>
         </section>
