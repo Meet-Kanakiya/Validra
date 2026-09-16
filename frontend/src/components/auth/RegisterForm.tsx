@@ -1,0 +1,359 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Button } from "@/components/shared/ui/button";
+import { cn } from "@/lib/utils";
+import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
+import { useAuth } from "@/hooks/useAuth";
+import { ApiError, getUserFriendlyErrorMessage } from "@/services/api";
+
+interface RegisterFormErrors {
+  fullName?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+}
+
+/**
+ * Reusable RegisterForm component with client-side validation,
+ * dynamic password strength meter, real auth-service integration, and error alerts.
+ */
+export function RegisterForm() {
+  const router = useRouter();
+  const { register: registerUser, isAuthenticated, isLoading: isAuthChecking } = useAuth();
+  const [fullName, setFullName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [errors, setErrors] = React.useState<RegisterFormErrors>({});
+  const [serverError, setServerError] = React.useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  // Prevent already-authenticated users from staying on register page
+  React.useEffect(() => {
+    if (!isAuthChecking && isAuthenticated) {
+      router.replace("/dashboard");
+    }
+  }, [isAuthChecking, isAuthenticated, router]);
+
+  // Email format regular expression (RFC 5322 subset)
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const validate = (): boolean => {
+    const nextErrors: RegisterFormErrors = {};
+
+    if (!fullName.trim()) {
+      nextErrors.fullName = "Full name is required.";
+    }
+
+    if (!email.trim()) {
+      nextErrors.email = "Email address is required.";
+    } else if (!emailRegex.test(email.trim())) {
+      nextErrors.email = "Please enter a valid email address.";
+    }
+
+    if (!password) {
+      nextErrors.password = "Password is required.";
+    } else if (password.length < 6) {
+      nextErrors.password = "Password must be at least 6 characters.";
+    }
+
+    if (!confirmPassword) {
+      nextErrors.confirmPassword = "Confirm password is required.";
+    } else if (confirmPassword !== password) {
+      nextErrors.confirmPassword = "Passwords do not match.";
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setServerError(null);
+
+    if (!validate()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await registerUser({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        password,
+      });
+
+      // If email verification is required or user is not verified yet
+      if (response?.requiresEmailVerification || !response?.user?.isVerified) {
+        router.push(`/verify-email?email=${encodeURIComponent(email.trim())}`);
+      } else {
+        router.push("/login");
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        if (err.code === "EMAIL_ALREADY_REGISTERED") {
+          setServerError("An account with this email address already exists. Please sign in instead.");
+        } else {
+          setServerError(err.message);
+        }
+      } else {
+        setServerError(getUserFriendlyErrorMessage(err));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+      {/* Top Server Error Alert */}
+      {serverError && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="flex items-start gap-2.5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 text-xs leading-relaxed"
+        >
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="flex-1">
+            <span>{serverError}</span>
+            {serverError.includes("sign in") && (
+              <div className="mt-1">
+                <Link
+                  href="/login"
+                  className="text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-2"
+                >
+                  Go to sign in &rarr;
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {/* Full Name Field */}
+      <div>
+        <label
+          htmlFor="register-fullname"
+          className="block text-xs font-medium text-zinc-300 mb-1.5"
+        >
+          Full name
+        </label>
+        <input
+          id="register-fullname"
+          name="fullName"
+          type="text"
+          autoComplete="name"
+          required
+          placeholder="Enter your full name"
+          value={fullName}
+          disabled={isSubmitting}
+          onChange={(e) => {
+            setFullName(e.target.value);
+            if (errors.fullName) {
+              setErrors((prev) => ({ ...prev, fullName: undefined }));
+            }
+          }}
+          aria-invalid={Boolean(errors.fullName)}
+          aria-describedby={errors.fullName ? "fullname-error" : undefined}
+          className={cn(
+            "w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+            errors.fullName
+              ? "border-rose-500/80 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+              : "border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+          )}
+        />
+        {errors.fullName && (
+          <p id="fullname-error" role="alert" className="text-xs text-rose-400 mt-1.5">
+            {errors.fullName}
+          </p>
+        )}
+      </div>
+
+      {/* Email Field */}
+      <div>
+        <label
+          htmlFor="register-email"
+          className="block text-xs font-medium text-zinc-300 mb-1.5"
+        >
+          Email address
+        </label>
+        <input
+          id="register-email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          placeholder="you@example.com"
+          value={email}
+          disabled={isSubmitting}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (errors.email) {
+              setErrors((prev) => ({ ...prev, email: undefined }));
+            }
+          }}
+          aria-invalid={Boolean(errors.email)}
+          aria-describedby={errors.email ? "email-error" : undefined}
+          className={cn(
+            "w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+            errors.email
+              ? "border-rose-500/80 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+              : "border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+          )}
+        />
+        {errors.email && (
+          <p id="email-error" role="alert" className="text-xs text-rose-400 mt-1.5">
+            {errors.email}
+          </p>
+        )}
+      </div>
+
+      {/* Password Field */}
+      <div>
+        <label
+          htmlFor="register-password"
+          className="block text-xs font-medium text-zinc-300 mb-1.5"
+        >
+          Password
+        </label>
+        <div className="relative">
+          <input
+            id="register-password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            required
+            placeholder="Create a password"
+            value={password}
+            disabled={isSubmitting}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (errors.password) {
+                setErrors((prev) => ({ ...prev, password: undefined }));
+              }
+              // If confirm password was already entered, recheck match
+              if (confirmPassword && errors.confirmPassword && e.target.value === confirmPassword) {
+                setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+              }
+            }}
+            aria-invalid={Boolean(errors.password)}
+            aria-describedby={errors.password ? "password-error" : undefined}
+            className={cn(
+              "w-full px-3.5 py-2.5 pr-10 rounded-xl bg-zinc-950 border text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+              errors.password
+                ? "border-rose-500/80 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                : "border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+            )}
+          />
+          <button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 rounded-lg transition-colors disabled:pointer-events-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" aria-hidden="true" />
+            ) : (
+              <Eye className="w-4 h-4" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+        {errors.password && (
+          <p id="password-error" role="alert" className="text-xs text-rose-400 mt-1.5">
+            {errors.password}
+          </p>
+        )}
+
+        {/* Dynamic Password Strength Meter */}
+        <PasswordStrengthMeter password={password} />
+      </div>
+
+      {/* Confirm Password Field */}
+      <div>
+        <label
+          htmlFor="register-confirm-password"
+          className="block text-xs font-medium text-zinc-300 mb-1.5"
+        >
+          Confirm password
+        </label>
+        <div className="relative">
+          <input
+            id="register-confirm-password"
+            name="confirmPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            autoComplete="new-password"
+            required
+            placeholder="Re-enter your password"
+            value={confirmPassword}
+            disabled={isSubmitting}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (errors.confirmPassword) {
+                setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+              }
+            }}
+            aria-invalid={Boolean(errors.confirmPassword)}
+            aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
+            className={cn(
+              "w-full px-3.5 py-2.5 pr-10 rounded-xl bg-zinc-950 border text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+              errors.confirmPassword
+                ? "border-rose-500/80 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                : "border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+            )}
+          />
+          <button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => setShowConfirmPassword((prev) => !prev)}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 rounded-lg transition-colors disabled:pointer-events-none"
+            aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="w-4 h-4" aria-hidden="true" />
+            ) : (
+              <Eye className="w-4 h-4" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+        {errors.confirmPassword && (
+          <p id="confirm-password-error" role="alert" className="text-xs text-rose-400 mt-1.5">
+            {errors.confirmPassword}
+          </p>
+        )}
+      </div>
+
+      {/* Submit Button */}
+      <Button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full h-11 text-sm font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 shadow-md shadow-emerald-500/25 transition-all mt-2"
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+            <span>Creating account...</span>
+          </>
+        ) : (
+          "Create account"
+        )}
+      </Button>
+
+      {/* Sign In Link */}
+      <div className="pt-2 text-center text-xs text-zinc-400">
+        Already have an account?{" "}
+        <Link
+          href="/login"
+          className="text-emerald-400 hover:text-emerald-300 font-medium underline-offset-4 hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-400 rounded-sm"
+        >
+          Sign in
+        </Link>
+      </div>
+    </form>
+  );
+}
