@@ -36,10 +36,10 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
               setOpenIndex(null);
             }}
             className={cn(
-              "px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer",
+              "px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer",
               activeCategory === cat
-                ? "bg-emerald-500 text-zinc-950 font-semibold shadow-md shadow-emerald-500/20"
-                : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
+                ? "bg-green-700 text-white font-medium shadow-xs"
+                : "bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-xs"
             )}
           >
             {cat}
@@ -56,10 +56,10 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
             <div
               key={item.id}
               className={cn(
-                "rounded-2xl border transition-all duration-200 overflow-hidden",
+                "rounded-xl border transition-all duration-200 overflow-hidden bg-white shadow-xs",
                 isOpen
-                  ? "border-emerald-500/40 bg-zinc-900/80 shadow-lg shadow-emerald-950/20"
-                  : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700/80 hover:bg-zinc-900/60"
+                  ? "border-green-300 ring-1 ring-green-200/50"
+                  : "border-slate-200 hover:border-slate-300"
               )}
             >
               <button
@@ -68,14 +68,14 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
                 className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
               >
                 <div className="flex items-start gap-3">
-                  <span className="p-1 rounded-md bg-zinc-800/80 text-emerald-400 mt-0.5 shrink-0">
+                  <span className="p-1 rounded-md bg-green-50 text-green-700 mt-0.5 shrink-0">
                     <HelpCircle className="w-4 h-4" />
                   </span>
                   <div>
-                    <span className="text-base sm:text-lg font-semibold text-white group-hover:text-emerald-300">
+                    <span className="text-base sm:text-lg font-semibold text-slate-900 hover:text-green-800">
                       {item.question}
                     </span>
-                    <div className="text-[11px] text-zinc-400 font-medium uppercase mt-0.5 tracking-wider">
+                    <div className="text-[11px] text-slate-500 font-medium uppercase mt-0.5 tracking-wider">
                       {item.category}
                     </div>
                   </div>
@@ -83,8 +83,8 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
 
                 <div
                   className={cn(
-                    "w-8 h-8 rounded-full bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center text-zinc-300 shrink-0 transition-transform duration-200",
-                    isOpen && "rotate-180 bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                    "w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0 transition-transform duration-200",
+                    isOpen && "rotate-180 bg-green-50 text-green-700 border-green-200"
                   )}
                 >
                   <ChevronDown className="w-4 h-4" />
@@ -92,13 +92,13 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
               </button>
 
               {isOpen && (
-                <div className="px-5 sm:px-6 pb-6 pt-0 border-t border-zinc-800/50 mt-1">
-                  <p className="text-sm sm:text-base text-zinc-300 leading-relaxed mt-4">
+                <div className="px-5 sm:px-6 pb-6 pt-0 border-t border-slate-100 mt-1">
+                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed mt-4">
                     {item.answer}
                   </p>
                   {item.legalRef && (
-                    <div className="mt-4 flex items-center gap-2 p-2.5 rounded-lg bg-zinc-950/60 border border-zinc-800 text-xs font-mono text-emerald-400">
-                      <BookOpen className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <div className="mt-4 flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-mono text-green-700">
+                      <BookOpen className="w-3.5 h-3.5 text-green-700 shrink-0" />
                       <span>Legal Reference: {item.legalRef}</span>
                     </div>
                   )}

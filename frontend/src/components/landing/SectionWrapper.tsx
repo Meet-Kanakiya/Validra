@@ -16,9 +16,9 @@ export function SectionWrapper({
 }: SectionWrapperProps) {
   const backgrounds = {
     default: "bg-transparent",
-    muted: "bg-gradient-to-b from-zinc-950 via-zinc-900/40 to-zinc-950 border-y border-zinc-800/50",
-    accent: "relative bg-gradient-to-b from-zinc-950 via-indigo-950/20 to-zinc-950 border-y border-indigo-900/30",
-    hero: "relative bg-gradient-to-b from-zinc-950 via-zinc-900/80 to-zinc-950 overflow-hidden",
+    muted: "bg-slate-50/70 border-y border-slate-200/80",
+    accent: "relative bg-green-50/40 border-y border-green-100",
+    hero: "relative bg-white",
   };
 
   return (
